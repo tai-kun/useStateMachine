@@ -17,15 +17,17 @@
   "scripts": {
     "analyze": "size-limit --why",
     "build": "dts build",
-    "lint": "dts lint",
+    "lint": "biome lint ./examples ./src ./test",
     "size": "size-limit",
     "start": "dts watch",
-    "test": "dts test"
+    "test": "dts test",
+    "format": "biome format --write ./examples ./src ./test"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.5.3",
     "@size-limit/preset-small-lib": "^7.0.5",
     "@testing-library/react-hooks": "^8.0.1",
     "@tsconfig/create-react-app": "^2.0.2",
@@ -33,11 +35,8 @@
     "@types/jest": "^29.5.12",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
-    "@typescript-eslint/eslint-plugin": "^4.28.4",
-    "@typescript-eslint/parser": "^4.28.4",
     "@typescript/twoslash": "^2.1.0",
     "dts-cli": "^2.0.4",
-    "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^9.0.11",
     "react": ">=16.8.0",
     "size-limit": "^7.0.5",
@@ -46,7 +45,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "dts lint"
+      "pre-commit": "biome lint ./examples ./src ./test"
     }
   },
   "jest": {
