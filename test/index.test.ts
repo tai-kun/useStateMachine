@@ -8,6 +8,9 @@ import {
   t,
 } from "../src";
 
+// @ts-expect-error
+global.__DEV__ = true;
+
 describe.each<typeof useStateMachine>([
   useStateMachine,
   (d: any) => useExternalStateMachine(useMemo(() => createStateMachine(d), [])),

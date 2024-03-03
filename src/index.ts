@@ -124,7 +124,7 @@ function createReducer(definition: Machine.Definition.Impl) {
     if (internalEvent.type === "SET_CONTEXT") {
       const nextContext = internalEvent.updater(machineState.context);
 
-      if (process.env.NODE_ENV !== "production") {
+      if (__DEV__) {
         log(
           "Context update",
           ["Previous Context", machineState.context],
@@ -146,7 +146,7 @@ function createReducer(definition: Machine.Definition.Impl) {
         R.get(R.fromMaybe(definition.on), event.type);
 
       if (!resolvedTransition) {
-        if (process.env.NODE_ENV !== "production") {
+        if (__DEV__) {
           log(
             `Current state doesn't listen to event type "${event.type}".`,
             ["Current State", machineState],
@@ -174,7 +174,7 @@ function createReducer(definition: Machine.Definition.Impl) {
       })() as [Machine.StateValue.Impl, true?];
 
       if (didGuardDeny) {
-        if (process.env.NODE_ENV !== "production") {
+        if (__DEV__) {
           log(
             `Transition from "${machineState.value}" to "${nextStateValue}" denied by guard`,
             ["Event", event],
@@ -185,7 +185,7 @@ function createReducer(definition: Machine.Definition.Impl) {
         return machineState;
       }
 
-      if (process.env.NODE_ENV !== "production") {
+      if (__DEV__) {
         log(`Transition from "${machineState.value}" to "${nextStateValue}"`, [
           "Event",
           event,
@@ -239,7 +239,7 @@ function createLogger(definition: Machine.Definition.Impl) {
 
     const console_ = definition.console || console;
 
-    if (process.env.NODE_ENV !== "production") {
+    if (__DEV__) {
       console_.groupCollapsed?.(
         "%cuseStateMachine",
         "color: #888; font-weight: lighter;",
