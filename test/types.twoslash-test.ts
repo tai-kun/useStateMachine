@@ -985,8 +985,8 @@ describe("Machine.Definition", () => {
           "See the documentation to learn more."
       );
 
-      // @ts-expect-error
       useStateMachine(
+        // @ts-expect-error
         {} as LS.ConcatAll<
           [
             "Oops you have met a TypeScript limitation, ",
