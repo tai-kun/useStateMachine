@@ -37,7 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
     "@typescript/twoslash": "^2.1.0",
-    "dts-cli": "^1.1.6",
+    "dts-cli": "^2.0.4",
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^7.0.4",
     "react": ">=16.8.0",
