@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
-    "@size-limit/preset-small-lib": "^7.0.5",
+    "@size-limit/preset-small-lib": "^9.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@tsconfig/create-react-app": "^2.0.2",
     "@tsconfig/recommended": "^1.0.3",
