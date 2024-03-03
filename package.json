@@ -39,7 +39,7 @@
     "@typescript/twoslash": "^2.1.0",
     "dts-cli": "^2.0.4",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "husky": "^7.0.4",
+    "husky": "^9.0.11",
     "react": ">=16.8.0",
     "react-test-renderer": "^17.0.1",
     "size-limit": "^7.0.5",
