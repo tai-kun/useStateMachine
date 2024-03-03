@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
-    "@size-limit/preset-small-lib": "^9.0.0",
+    "@size-limit/preset-small-lib": "^11.0.2",
     "@testing-library/react-hooks": "^8.0.1",
     "@tsconfig/node18": "^18.2.2",
     "@tsconfig/strictest": "^2.0.3",
@@ -40,7 +40,7 @@
     "dts-cli": "^2.0.4",
     "husky": "^9.0.11",
     "react": ">=16.8.0",
-    "size-limit": "^7.0.5",
+    "size-limit": "^11.0.2",
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
   },
