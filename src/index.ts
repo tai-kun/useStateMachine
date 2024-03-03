@@ -3,9 +3,15 @@ import { UseStateMachine, Machine, $$t } from "./types";
 import { assertNever, R, useConstant } from "./extras";
 
 const useStateMachineImpl = (definition: Machine.Definition.Impl) => {
-  const [state, dispatch] = useReducer(createReducer(definition), createInitialState(definition));
+  const [state, dispatch] = useReducer(
+    createReducer(definition),
+    createInitialState(definition)
+  );
 
-  const send = useConstant(() => (sendable: Machine.Sendable.Impl) => dispatch({ type: "SEND", sendable }));
+  const send = useConstant(
+    () => (sendable: Machine.Sendable.Impl) =>
+      dispatch({ type: "SEND", sendable })
+  );
 
   const setContext = (updater: Machine.ContextUpdater.Impl) => {
     dispatch({ type: "SET_CONTEXT", updater });
@@ -22,7 +28,13 @@ const useStateMachineImpl = (definition: Machine.Definition.Impl) => {
     });
 
     return typeof exit === "function"
-      ? () => exit?.({ send, setContext, event: state.event, context: state.context })
+      ? () =>
+          exit?.({
+            send,
+            setContext,
+            event: state.event,
+            context: state.context,
+          })
       : undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.value, state.event]);
@@ -30,26 +42,37 @@ const useStateMachineImpl = (definition: Machine.Definition.Impl) => {
   return [state, send];
 };
 
-const createInitialState = (definition: Machine.Definition.Impl): Machine.State.Impl => {
-  let nextEvents = R.keys(R.concat(
-    R.fromMaybe(R.get(definition.states, definition.initial)!.on),
-    R.fromMaybe(definition.on)
-  ))
+const createInitialState = (
+  definition: Machine.Definition.Impl
+): Machine.State.Impl => {
+  let nextEvents = R.keys(
+    R.concat(
+      R.fromMaybe(R.get(definition.states, definition.initial)!.on),
+      R.fromMaybe(definition.on)
+    )
+  );
   return {
     value: definition.initial,
     context: definition.context as Machine.Context.Impl,
     event: { type: "$$initial" } as Machine.Event.Impl,
     nextEvents: nextEvents,
-    nextEventsT: nextEvents
-  }
-}
+    nextEventsT: nextEvents,
+  };
+};
 
 const createReducer = (definition: Machine.Definition.Impl) => {
   let log = createLogger(definition);
-  return (machineState: Machine.State.Impl, internalEvent: InternalEvent): Machine.State.Impl => {
+  return (
+    machineState: Machine.State.Impl,
+    internalEvent: InternalEvent
+  ): Machine.State.Impl => {
     if (internalEvent.type === "SET_CONTEXT") {
       let nextContext = internalEvent.updater(machineState.context);
-      log("Context update", ["Previous Context", machineState.context], ["Next Context", nextContext]);
+      log(
+        "Context update",
+        ["Previous Context", machineState.context],
+        ["Next Context", nextContext]
+      );
 
       return { ...machineState, context: nextContext };
     }
@@ -60,7 +83,8 @@ const createReducer = (definition: Machine.Definition.Impl) => {
       let context = machineState.context;
       let stateNode = R.get(definition.states, machineState.value)!;
       let resolvedTransition =
-        R.get(R.fromMaybe(stateNode.on), event.type) ?? R.get(R.fromMaybe(definition.on), event.type);
+        R.get(R.fromMaybe(stateNode.on), event.type) ??
+        R.get(R.fromMaybe(definition.on), event.type);
 
       if (!resolvedTransition) {
         log(
@@ -73,10 +97,12 @@ const createReducer = (definition: Machine.Definition.Impl) => {
 
       let [nextStateValue, didGuardDeny = false] = (() => {
         if (typeof resolvedTransition === "string") return [resolvedTransition];
-        if (resolvedTransition.guard === undefined) return [resolvedTransition.target];
-        if (resolvedTransition.guard({ context, event })) return [resolvedTransition.target];
-        return [resolvedTransition.target, true]
-      })() as [Machine.StateValue.Impl, true?]
+        if (resolvedTransition.guard === undefined)
+          return [resolvedTransition.target];
+        if (resolvedTransition.guard({ context, event }))
+          return [resolvedTransition.target];
+        return [resolvedTransition.target, true];
+      })() as [Machine.StateValue.Impl, true?];
 
       if (didGuardDeny) {
         log(
@@ -86,20 +112,22 @@ const createReducer = (definition: Machine.Definition.Impl) => {
         );
         return machineState;
       }
-      log(`Transition from "${machineState.value}" to "${nextStateValue}"`, ["Event", event]);
+      log(`Transition from "${machineState.value}" to "${nextStateValue}"`, [
+        "Event",
+        event,
+      ]);
 
       let resolvedStateNode = R.get(definition.states, nextStateValue)!;
 
-      let nextEvents = R.keys(R.concat(
-        R.fromMaybe(resolvedStateNode.on),
-        R.fromMaybe(definition.on)
-      ));
+      let nextEvents = R.keys(
+        R.concat(R.fromMaybe(resolvedStateNode.on), R.fromMaybe(definition.on))
+      );
       return {
         value: nextStateValue,
         context,
         event,
         nextEvents,
-        nextEventsT: nextEvents
+        nextEventsT: nextEvents,
       };
     }
 
@@ -119,29 +147,38 @@ interface SendEvent {
 
 type InternalEvent = SetContextEvent | SendEvent;
 
-export type Console =
-  { log: (a: string, b: string | object) => void
-  , groupCollapsed?: (...l: string[]) => void
-  , groupEnd?: () => void
-  }
+export type Console = {
+  log: (a: string, b: string | object) => void;
+  groupCollapsed?: (...l: string[]) => void;
+  groupEnd?: () => void;
+};
 
 // test sub-typing
-const defaultConsole: Console = console
+const defaultConsole: Console = console;
 
-const createLogger = (definition: Machine.Definition.Impl) => (groupLabel: string, ...nested: [string, string | object][]) => {
-  if (!definition.verbose) return;
-  
-  let console = definition.console || defaultConsole
-  if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
-    console.groupCollapsed?.("%cuseStateMachine", "color: #888; font-weight: lighter;", groupLabel);
-    nested.forEach(message => {
-      console.log(message[0], message[1]);
-    });
-    console.groupEnd?.();
-  }
-};
+const createLogger =
+  (definition: Machine.Definition.Impl) =>
+  (groupLabel: string, ...nested: [string, string | object][]) => {
+    if (!definition.verbose) return;
+
+    let console = definition.console || defaultConsole;
+    if (
+      process.env.NODE_ENV === "development" ||
+      process.env.NODE_ENV === "test"
+    ) {
+      console.groupCollapsed?.(
+        "%cuseStateMachine",
+        "color: #888; font-weight: lighter;",
+        groupLabel
+      );
+      nested.forEach((message) => {
+        console.log(message[0], message[1]);
+      });
+      console.groupEnd?.();
+    }
+  };
 
 const useStateMachine = useStateMachineImpl as unknown as UseStateMachine;
 export default useStateMachine;
 
-export const t = <T extends unknown>() => ({ [$$t]: undefined as T })
+export const t = <T extends unknown>() => ({ [$$t]: undefined as T });

@@ -33,5 +33,4 @@ For local development, you'll have to update `package.json` and `tsconfig.json`:
   },
 ```
 
-
 Finally, run `npm start` on both the root library and on this example folder.

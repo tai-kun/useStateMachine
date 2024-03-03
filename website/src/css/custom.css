@@ -7,7 +7,6 @@
 
 /* You can override the default Infima variables here. */
 
-
 .docusaurus-highlight-code-line {
   background-color: rgba(0, 0, 0, 0.1);
   display: block;
@@ -15,11 +14,11 @@
   padding: 0 var(--ifm-pre-padding);
 }
 
-html[data-theme='dark'] .docusaurus-highlight-code-line {
+html[data-theme="dark"] .docusaurus-highlight-code-line {
   background-color: rgba(0, 0, 0, 0.3);
 }
 
-@media only screen and (max-device-width: 490px) and (orientation : portrait){  
+@media only screen and (max-device-width: 490px) and (orientation: portrait) {
   .hero__title {
     font-size: 2rem;
   }
@@ -28,7 +27,6 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
 .navbar__search {
   padding-left: 7px;
 }
-
 
 [data-theme="light"] .shiki.github-dark {
   display: none;

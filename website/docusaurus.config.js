@@ -1,4 +1,3 @@
-
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
   title: "useStateMachine",
@@ -13,17 +12,17 @@ module.exports = {
   projectName: "useStateMachine", // Usually your repo name.
   themeConfig: {
     colorMode: {
-      defaultMode: 'dark',
+      defaultMode: "dark",
       disableSwitch: false,
       respectPrefersColorScheme: true,
       switchConfig: {
-        darkIcon: '🌙',
-        lightIcon: '\u2600',
+        darkIcon: "🌙",
+        lightIcon: "\u2600",
         darkIconStyle: {
-          marginLeft: '2px',
+          marginLeft: "2px",
         },
         lightIconStyle: {
-          marginLeft: '1px',
+          marginLeft: "1px",
         },
       },
     },
@@ -35,10 +34,10 @@ module.exports = {
       },
       items: [
         {
-          type: 'doc',
-          docId: 'api',
-          position: 'left',
-          label: 'API Docs',
+          type: "doc",
+          docId: "api",
+          position: "left",
+          label: "API Docs",
         },
         {
           href: "https://github.com/cassiozen/useStateMachine",
@@ -47,8 +46,6 @@ module.exports = {
         },
       ],
     },
-
-
   },
   presets: [
     [
@@ -70,5 +67,5 @@ module.exports = {
       },
     ],
   ],
-  plugins: [require.resolve('docusaurus-lunr-search')],
+  plugins: [require.resolve("docusaurus-lunr-search")],
 };

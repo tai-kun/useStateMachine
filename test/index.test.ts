@@ -3,17 +3,17 @@ import _useStateMachine, { t, Console } from "../src";
 
 let log = "";
 const logger: Console["log"] = (...xs) =>
-  log += xs.reduce(
+  (log += xs.reduce(
     (a, x) => a + (typeof x === "string" ? x : JSON.stringify(x)),
     ""
-  )
-const clearLog = () =>
-  log = "";
+  ));
+const clearLog = () => (log = "");
 
-const useStateMachine =
-  ((d: any) =>
-    _useStateMachine({ ...d, console: { log: logger } })
-  ) as typeof _useStateMachine
+const useStateMachine = ((d: any) =>
+  _useStateMachine({
+    ...d,
+    console: { log: logger },
+  })) as typeof _useStateMachine;
 
 describe("useStateMachine", () => {
   describe("States & Transitions", () => {
@@ -277,8 +277,8 @@ describe("useStateMachine", () => {
         useStateMachine({
           schema: {
             events: {
-              ACTIVATE: t<{ number: number }>()
-            }
+              ACTIVATE: t<{ number: number }>(),
+            },
           },
           context: undefined,
           initial: "inactive",
@@ -297,7 +297,10 @@ describe("useStateMachine", () => {
       act(() => {
         result.current[1]({ type: "ACTIVATE", number: 10 });
       });
-      expect(effect.mock.calls[0][0]["event"]).toStrictEqual({ type: "ACTIVATE", number: 10 });
+      expect(effect.mock.calls[0][0]["event"]).toStrictEqual({
+        type: "ACTIVATE",
+        number: 10,
+      });
     });
     it("should invoke effect with context as a parameter", () => {
       const finalEffect = jest.fn();
@@ -442,8 +445,8 @@ describe("useStateMachine", () => {
                   foo: "bar",
                 });
                 expect(params.event).toStrictEqual({
-                  type: "$$initial"
-                })
+                  type: "$$initial",
+                });
               },
             },
             active: {
@@ -474,7 +477,7 @@ describe("useStateMachine", () => {
             active: {
               on: { TOGGLE: "inactive" },
               effect({ setContext }) {
-                setContext(c => ({ toggleCount: c.toggleCount + 1 }));
+                setContext((c) => ({ toggleCount: c.toggleCount + 1 }));
               },
             },
           },
@@ -504,7 +507,8 @@ describe("useStateMachine", () => {
             inactive: {
               on: { TOGGLE: "active" },
               effect({ setContext }) {
-                return () => setContext(c => ({ toggleCount: c.toggleCount + 1 }));
+                return () =>
+                  setContext((c) => ({ toggleCount: c.toggleCount + 1 }));
               },
             },
             active: {

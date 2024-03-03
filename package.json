@@ -53,11 +53,6 @@
       "pre-commit": "dts lint"
     }
   },
-  "prettier": {
-    "singleQuote": false,
-    "printWidth": 120,
-    "trailingComma": "es5"
-  },
   "jest": {
     "resetMocks": true
   },

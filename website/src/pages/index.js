@@ -5,7 +5,7 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import styles from "./index.module.css";
 // eslint-disable-next-line no-unused-vars
-import useStateMachine, {t} from '@cassiozen/usestatemachine';
+import useStateMachine, { t } from "@cassiozen/usestatemachine";
 
 function Home() {
   const context = useDocusaurusContext();
@@ -42,15 +42,12 @@ function Home() {
                   alt="Batteries Included"
                   src={useBaseUrl("/img/battery.svg")}
                 />
-                <h2 className={styles.featureHeading}>
-                  Batteries Included
-                </h2>
+                <h2 className={styles.featureHeading}>Batteries Included</h2>
                 <p className="padding-horiz--md">
-                  
-                  Despite the tiny size, useStateMachine is a <span style={{whiteSpace: "nowrap"}}>feature-complete</span>
-                  {' '}State Machine library, including features like Entry/Exit callbacks, Guarded transitions
-                  & Extended State (Context)
-                  
+                  Despite the tiny size, useStateMachine is a{" "}
+                  <span style={{ whiteSpace: "nowrap" }}>feature-complete</span>{" "}
+                  State Machine library, including features like Entry/Exit
+                  callbacks, Guarded transitions & Extended State (Context)
                 </p>
               </div>
               <div className="col">
@@ -63,12 +60,10 @@ function Home() {
                   Amazing TypeScript experience
                 </h2>
                 <p className="padding-horiz--md">
-                  
-                  Focus on automatic type inference (auto completion for both TypeScript & JavaScript users
-                  without having to manually define the typings) while giving you the option to specify
-                  and augment the types for context & events.
-                  
-                  
+                  Focus on automatic type inference (auto completion for both
+                  TypeScript & JavaScript users without having to manually
+                  define the typings) while giving you the option to specify and
+                  augment the types for context & events.
                 </p>
               </div>
               <div className="col">
@@ -77,15 +72,13 @@ function Home() {
                   className={styles.featureImage}
                   src={useBaseUrl("/img/react.svg")}
                 />
-                <h2 className={styles.featureHeading}>
-                  Made for React
-                </h2>
+                <h2 className={styles.featureHeading}>Made for React</h2>
                 <p className="padding-horiz--md">
-                  
-                  Instead of introducing many new concepts, useStateMachine follow idiomatic React patterns you and 
-                  your team are already familiar with. <br/>
-                  The library itself is actually a thin wrapper around React's useReducer & useEffect.
-                  
+                  Instead of introducing many new concepts, useStateMachine
+                  follow idiomatic React patterns you and your team are already
+                  familiar with. <br />
+                  The library itself is actually a thin wrapper around React's
+                  useReducer & useEffect.
                 </p>
               </div>
             </div>

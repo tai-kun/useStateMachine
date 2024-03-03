@@ -1,8 +1,8 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import useStateMachine, {t} from '@cassiozen/usestatemachine';
-import './index.css';
-import Cup from './Cup';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import useStateMachine, { t } from "@cassiozen/usestatemachine";
+import "./index.css";
+import Cup from "./Cup";
 
 /*
  * In this example we're fetching some data with included retry logic (Will retry 2 times before giving up)
@@ -18,29 +18,34 @@ type Coffee = {
 function App() {
   const [machine, send] = useStateMachine({
     schema: {
-      context: t<{ retryCount: number; data?: Coffee[]; error?: string }>()
+      context: t<{ retryCount: number; data?: Coffee[]; error?: string }>(),
     },
     context: { retryCount: 0 },
-    initial: 'loading',
+    initial: "loading",
     verbose: true,
     states: {
       loading: {
         on: {
-          SUCCESS: 'loaded',
-          FAILURE: 'error',
+          SUCCESS: "loaded",
+          FAILURE: "error",
         },
         effect({ setContext }) {
           const fetchCoffees = async () => {
             let response: Response;
             try {
-              response = await fetch('https://api.sampleapis.com/coffee/hot');
+              response = await fetch("https://api.sampleapis.com/coffee/hot");
               if (!response.ok) {
                 throw new Error(`An error has occured: ${response.status}`);
               }
               const coffees = await response.json();
-              setContext(context => ({ data: coffees, ...context })).send('SUCCESS');
+              setContext((context) => ({ data: coffees, ...context })).send(
+                "SUCCESS"
+              );
             } catch (error) {
-              setContext(context => ({ error: error.message, ...context })).send('FAILURE');
+              setContext((context) => ({
+                error: error.message,
+                ...context,
+              })).send("FAILURE");
             }
           };
           fetchCoffees();
@@ -50,12 +55,15 @@ function App() {
       error: {
         on: {
           RETRY: {
-            target: 'loading',
+            target: "loading",
             guard: ({ context }) => context.retryCount < 3,
           },
         },
         effect({ setContext }) {
-          setContext(context => ({ ...context, retryCount: context.retryCount + 1 })).send('RETRY');
+          setContext((context) => ({
+            ...context,
+            retryCount: context.retryCount + 1,
+          })).send("RETRY");
         },
       },
     },
@@ -64,11 +72,11 @@ function App() {
   return (
     <div className="coffees">
       <Cup />
-      {machine.value === 'loading' && <p>Loading</p>}
-      {machine.value === 'error' && <p>{machine.context.error}</p>}
-      {machine.value === 'loaded' && (
+      {machine.value === "loading" && <p>Loading</p>}
+      {machine.value === "error" && <p>{machine.context.error}</p>}
+      {machine.value === "loaded" && (
         <ul>
-          {machine.context.data?.map(coffee => (
+          {machine.context.data?.map((coffee) => (
             <li key={coffee.id}>
               <h2>{coffee.title}</h2>
               <p>{coffee.description}</p>
@@ -80,4 +88,4 @@ function App() {
   );
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById("root"));

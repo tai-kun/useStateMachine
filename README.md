@@ -12,7 +12,6 @@ See the user-facing docs at: [usestatemachine.js.org](https://usestatemachine.js
 
 <img width="354" alt="size badge" src="https://user-images.githubusercontent.com/33676/126902516-51f46526-3023-43c7-afd4-17df2e89a3a1.png">
 
-
 ## Examples
 
 - State-driven UI (Hiding and showing UI Elements based on the state) - [CodeSandbox](https://codesandbox.io/s/github/cassiozen/usestatemachine/tree/main/examples/timer?file=/index.tsx) - [Source](./examples/timer)
@@ -29,18 +28,18 @@ npm install @cassiozen/usestatemachine
 
 ```typescript
 const [state, send] = useStateMachine({
-  initial: 'inactive',
+  initial: "inactive",
   states: {
     inactive: {
-      on: { TOGGLE: 'active' },
+      on: { TOGGLE: "active" },
     },
     active: {
-      on: { TOGGLE: 'inactive' },
+      on: { TOGGLE: "inactive" },
       effect() {
-        console.log('Just entered the Active state');
+        console.log("Just entered the Active state");
         // Same cleanup pattern as `useEffect`:
         // If you return a function, it will run when exiting the state.
-        return () => console.log('Just Left the Active state');
+        return () => console.log("Just Left the Active state");
       },
     },
   },
@@ -50,13 +49,12 @@ console.log(state); // { value: 'inactive', nextEvents: ['TOGGLE'] }
 
 // Refers to the TOGGLE event name for the state we are currently in.
 
-send('TOGGLE');
+send("TOGGLE");
 
 // Logs: Just entered the Active state
 
 console.log(state); // { value: 'active', nextEvents: ['TOGGLE'] }
 ```
-
 
 # API
 
@@ -90,13 +88,13 @@ You can also send additional data with your event using the object notation (e.g
 
 # State Machine definition
 
-| Key         | Required | Description |
-| ----------- | ---- |----------- |
-| verbose     |   | If true, will log every context & state changes. Log messages will be stripped out in the production build. |
-| schema      |   | For usage with TypeScript only. Optional strongly-typed context & events. More on schema [below](#schema-context--event-typing) |
-| context     |   | Context is the machine's extended state. More on extended state [below](#extended-state-context) |
-| initial     | * | The initial state node this machine should be in |
-| states      | * | Define the possible finite states the state machine can be in. |
+| Key     | Required | Description                                                                                                                     |
+| ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| verbose |          | If true, will log every context & state changes. Log messages will be stripped out in the production build.                     |
+| schema  |          | For usage with TypeScript only. Optional strongly-typed context & events. More on schema [below](#schema-context--event-typing) |
+| context |          | Context is the machine's extended state. More on extended state [below](#extended-state-context)                                |
+| initial | \*       | The initial state node this machine should be in                                                                                |
+| states  | \*       | Define the possible finite states the state machine can be in.                                                                  |
 
 ## Defining States
 
@@ -139,12 +137,12 @@ Guards are functions that run before actually making the state transition: If th
 
 ```js
 const [state, send] = useStateMachine({
-  initial: 'inactive',
+  initial: "inactive",
   states: {
     inactive: {
       on: {
         TOGGLE: {
-          target: 'active',
+          target: "active",
           guard({ context, event }) {
             // Return a boolean to allow or block the transition
           },
@@ -152,7 +150,7 @@ const [state, send] = useStateMachine({
       },
     },
     active: {
-      on: { TOGGLE: 'inactive' },
+      on: { TOGGLE: "inactive" },
     },
   },
 });
@@ -166,13 +164,13 @@ Effects are triggered when the state machine enters a given state. If you return
 
 ```typescript
 const [state, send] = useStateMachine({
-  initial: 'active',
+  initial: "active",
   states: {
     active: {
-      on: { TOGGLE: 'inactive' },
+      on: { TOGGLE: "inactive" },
       effect({ send, setContext, event, context }) {
-        console.log('Just entered the Active state');
-        return () => console.log('Just Left the Active state');
+        console.log("Just entered the Active state");
+        return () => console.log("Just Left the Active state");
       },
     },
   },
@@ -190,15 +188,15 @@ In this example, the state machine will always send the "RETRY" event when enter
 
 ```typescript
 const [state, send] = useStateMachine({
-  initial: 'loading',
+  initial: "loading",
   states: {
     /* Other states here... */
     error: {
       on: {
-        RETRY: 'load',
+        RETRY: "load",
       },
       effect({ send }) {
-        send('RETRY');
+        send("RETRY");
       },
     },
   },
@@ -214,15 +212,15 @@ You can provide the initial context value in the state machine definition, then 
 ```js
 const [state, send] = useStateMachine({
   context: { toggleCount: 0 },
-  initial: 'inactive',
+  initial: "inactive",
   states: {
     inactive: {
-      on: { TOGGLE: 'active' },
+      on: { TOGGLE: "active" },
     },
     active: {
-      on: { TOGGLE: 'inactive' },
+      on: { TOGGLE: "inactive" },
       effect({ setContext }) {
-        setContext(context => ({ toggleCount: context.toggleCount + 1 }));
+        setContext((context) => ({ toggleCount: context.toggleCount + 1 }));
       },
     },
   },
@@ -230,7 +228,7 @@ const [state, send] = useStateMachine({
 
 console.log(state); // { context: { toggleCount: 0 }, value: 'inactive', nextEvents: ['TOGGLE'] }
 
-send('TOGGLE');
+send("TOGGLE");
 
 console.log(state); // { context: { toggleCount: 1 }, value: 'active', nextEvents: ['TOGGLE'] }
 ```
@@ -241,33 +239,32 @@ TypeScript will automatically infer your context type; event types are generated
 
 Still, there are situations where you might want explicit control over the `context` and `event` types: You can provide you own typing using the `t` whithin `schema`:
 
-*Typed Context example*
+_Typed Context example_
 
 ```typescript
 const [state, send] = useStateMachine({
   schema: {
-    context: t<{ toggleCount: number }>()
+    context: t<{ toggleCount: number }>(),
   },
   context: { toggleCount: 0 },
-  initial: 'inactive',
+  initial: "inactive",
   states: {
     inactive: {
-      on: { TOGGLE: 'active' },
+      on: { TOGGLE: "active" },
     },
     active: {
-      on: { TOGGLE: 'inactive' },
+      on: { TOGGLE: "inactive" },
       effect({ setContext }) {
-        setContext(context => ({ toggleCount: context.toggleCount + 1 }));
+        setContext((context) => ({ toggleCount: context.toggleCount + 1 }));
       },
     },
   },
 });
 ```
 
-*Typed Events*
+_Typed Events_
 
-
-All events are type-infered by default, both in the string notation (`send("UPDATE")`) and the object notation (`send({ type: "UPDATE"})`). 
+All events are type-infered by default, both in the string notation (`send("UPDATE")`) and the object notation (`send({ type: "UPDATE"})`).
 
 If you want, though, you can augment an already typed event to include arbitrary data (which can be useful to provide values to be used inside effects or to update the context). Example:
 
@@ -276,30 +273,29 @@ const [machine, send] = useStateMachine({
   schema: {
     context: t<{ timeout?: number }>(),
     events: {
-      PING: t<{ value: number }>()
-    }
+      PING: t<{ value: number }>(),
+    },
   },
-  context: {timeout: undefined},
-  initial: 'waiting',
+  context: { timeout: undefined },
+  initial: "waiting",
   states: {
     waiting: {
       on: {
-        PING: 'pinged'
-      }
+        PING: "pinged",
+      },
     },
     pinged: {
       effect({ setContext, event }) {
-        setContext(c => ({ timeout: event?.value ?? 0 }));
+        setContext((c) => ({ timeout: event?.value ?? 0 }));
       },
-    }
+    },
   },
 });
 
-send({ type: 'PING', value: 150 })
+send({ type: "PING", value: 150 });
 ```
 
 **Note** that you don't need to declare all your events in the schema, only the ones you're adding arbitrary keys and values.
-
 
 # Wiki
 
