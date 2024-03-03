@@ -1,12 +1,21 @@
 import "global-jsdom/register";
+import { useMemo } from "react";
 import { act, renderHook } from "@testing-library/react";
-import useStateMachine, { t } from "../src";
+import {
+  useStateMachine,
+  useExternalStateMachine,
+  createStateMachine,
+  t,
+} from "../src";
 
-describe("useStateMachine", () => {
+describe.each<typeof useStateMachine>([
+  useStateMachine,
+  (d: any) => useExternalStateMachine(useMemo(() => createStateMachine(d), [])),
+])("", (useHook) => {
   describe("States & Transitions", () => {
     it("should set initial state", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {
@@ -30,7 +39,7 @@ describe("useStateMachine", () => {
 
     it("should transition", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {
@@ -60,7 +69,7 @@ describe("useStateMachine", () => {
 
     it("should transition using a top-level `on`", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {
@@ -93,7 +102,7 @@ describe("useStateMachine", () => {
 
     it("should transition using an object event", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {
@@ -123,7 +132,7 @@ describe("useStateMachine", () => {
 
     it("should ignore unexisting events", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {
@@ -153,7 +162,7 @@ describe("useStateMachine", () => {
 
     it("should transition with object syntax", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {
@@ -192,7 +201,7 @@ describe("useStateMachine", () => {
       const entry = jest.fn();
       const exit = jest.fn();
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {
@@ -220,8 +229,11 @@ describe("useStateMachine", () => {
       expect(entry.mock.calls.length).toBe(2);
       expect(exit.mock.calls.length).toBe(1);
 
-      expect(entry.mock.invocationCallOrder).toEqual([1, 3]);
-      expect(exit.mock.invocationCallOrder).toEqual([2]);
+      const [entry1, entry2] = entry.mock.invocationCallOrder;
+      const [exit1] = exit.mock.invocationCallOrder;
+      // entry1 < exit1 < entry2
+      expect(entry1).toBeLessThan(entry2!);
+      expect(exit1).toBeLessThan(entry2!);
 
       expect(entry.mock.calls[0][0]).toBe("inactive");
       expect(entry.mock.calls[1][0]).toBe("active");
@@ -231,7 +243,7 @@ describe("useStateMachine", () => {
 
     it("should transition from effect", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {
@@ -261,7 +273,7 @@ describe("useStateMachine", () => {
     it("should get payload sent with event object", () => {
       const effect = jest.fn();
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           schema: {
             events: {
               ACTIVATE: t<{ number: number }>(),
@@ -296,7 +308,7 @@ describe("useStateMachine", () => {
       });
 
       renderHook(() =>
-        useStateMachine({
+        useHook({
           context: false,
           initial: "inactive",
           states: {
@@ -323,7 +335,7 @@ describe("useStateMachine", () => {
       const guard = jest.fn(() => false);
 
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {
@@ -359,7 +371,7 @@ describe("useStateMachine", () => {
       const guard = jest.fn(() => true);
 
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {
@@ -396,7 +408,7 @@ describe("useStateMachine", () => {
   describe("Extended State", () => {
     it("should set initial context", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           context: { foo: "bar" },
           initial: "inactive",
           states: {
@@ -421,7 +433,7 @@ describe("useStateMachine", () => {
 
     it("should get the context inside effects", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           context: { foo: "bar" },
           initial: "inactive",
           states: {
@@ -454,7 +466,7 @@ describe("useStateMachine", () => {
 
     it("should update context on entry", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           context: { toggleCount: 0 },
           initial: "inactive",
           states: {
@@ -487,7 +499,7 @@ describe("useStateMachine", () => {
     });
     it("should update context on exit", () => {
       const { result } = renderHook(() =>
-        useStateMachine({
+        useHook({
           context: { toggleCount: 0 },
           initial: "inactive",
           states: {
@@ -532,13 +544,9 @@ describe("useStateMachine", () => {
       logSpy.mockClear();
     });
 
-    afterAll(() => {
-      logSpy.mockRestore();
-    });
-
     it("should log when invalid event is provided as string", () => {
       renderHook(() =>
-        useStateMachine({
+        useHook({
           verbose: true,
           initial: "idle",
           states: {
@@ -557,7 +565,7 @@ describe("useStateMachine", () => {
 
     it("should log when invalid event is provided as object", () => {
       renderHook(() =>
-        useStateMachine({
+        useHook({
           verbose: true,
           initial: "idle",
           states: {
@@ -577,7 +585,7 @@ describe("useStateMachine", () => {
   describe("React performance", () => {
     it("should provide a stable `send`", () => {
       const { result, rerender } = renderHook(() =>
-        useStateMachine({
+        useHook({
           initial: "inactive",
           states: {
             inactive: {

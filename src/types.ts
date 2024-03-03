@@ -25,15 +25,15 @@ import { R } from "./extras";
  *     },
  *   },
  * });
- * 
+ *
  * console.log(state); // { value: 'inactive', nextEvents: ['TOGGLE'] }
- * 
+ *
  * // Refers to the TOGGLE event name for the state we are currently in.
- * 
+ *
  * send('TOGGLE');
- * 
+ *
  * // Logs: Just entered the Active state
- * 
+ *
  * console.log(state); // { value: 'active', nextEvents: ['TOGGLE'] }
  * ```
  */
@@ -44,9 +44,71 @@ export type UseStateMachine = <D extends Machine.Definition<D>>(
   send: Machine.Send<Machine.Definition.FromTypeParamter<D>>,
 ];
 
+/**
+ * Create a state machine.
+ *
+ * @template D The state machine definition.
+ * @param definition The state machine definition.
+ * @returns A state machine.
+ * @example
+ * ```ts
+ * const machine = createStateMachine({
+ *   initial: 'inactive',
+ *   states: {
+ *     inactive: {
+ *       on: { TOGGLE: 'active' },
+ *     },
+ *     active: {
+ *       on: { TOGGLE: 'inactive' },
+ *       effect() {
+ *         console.log('Just entered the Active state');
+ *         // Same cleanup pattern as `useEffect`:
+ *         // If you return a function, it will run when exiting the state.
+ *         return () => console.log('Just Left the Active state');
+ *       },
+ *     },
+ *   },
+ * });
+ * ```
+ */
+export type CreateStateMachine = <D extends Machine.Definition<D>>(
+  definition: A.InferNarrowestObject<D>,
+) => Machine<D>;
+
+export type UseExternalStateMachine = <D extends Machine.Definition<D>>(
+  machine: Machine<D>,
+) => [
+  state: Machine.State<Machine.Definition.FromTypeParamter<D>>,
+  send: Machine.Send<Machine.Definition.FromTypeParamter<D>>,
+];
+
 export const $$t = Symbol("$$t");
+
 type $$t = typeof $$t;
+
 export type CreateType = <T>() => { [$$t]: T };
+
+interface SetContextEvent {
+  type: "SET_CONTEXT";
+  updater: Machine.ContextUpdater.Impl;
+}
+
+interface SendEvent {
+  type: "SEND";
+  sendable: Machine.Sendable.Impl;
+}
+
+type InternalEvent = SetContextEvent | SendEvent;
+
+/**
+ * @template D The state machine definition.
+ */
+export type Machine<D extends Machine.Definition<D>> = {
+  getState(): Machine.State<Machine.Definition.FromTypeParamter<D>>;
+  dispatch(internalEvent: InternalEvent): void;
+  subscribe(callback: (state: Machine.State.Impl) => void): () => void;
+  definition: D;
+};
 
 export namespace Machine {
   export type Definition<

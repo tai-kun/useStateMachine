@@ -1,13 +1,66 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useSyncExternalStore } from "react";
 import { R, assertNever, useConstant } from "./extras";
-import { $$t, Machine, UseStateMachine } from "./types";
+import {
+  $$t,
+  Machine,
+  UseStateMachine,
+  CreateStateMachine,
+  UseExternalStateMachine,
+} from "./types";
 
-function useStateMachine(definition: Machine.Definition.Impl) {
+function $createStateMachine(definition: Machine.Definition.Impl) {
+  let state = createInitialState(definition);
+  const update = createReducer(definition);
+  const callbacks = new Set<(state: Machine.State.Impl) => void>();
+
+  return {
+    getState() {
+      return state;
+    },
+    dispatch(internalEvent: InternalEvent) {
+      state = update(state, internalEvent);
+
+      for (const callback of callbacks) {
+        callback(state);
+      }
+    },
+    subscribe(callback: (state: Machine.State.Impl) => void) {
+      callbacks.add(callback);
+
+      return () => {
+        callbacks.delete(callback);
+      };
+    },
+    definition,
+  };
+}
+
+function $useExternalStateMachine(
+  machine: ReturnType<typeof $createStateMachine>,
+) {
+  const state = useSyncExternalStore(
+    useConstant(() => (notify) => machine.subscribe(notify)),
+    machine.getState,
+    machine.getState,
+  );
+
+  return useState(machine.definition, state, machine.dispatch);
+}
+
+function $useStateMachine(definition: Machine.Definition.Impl) {
   const [state, dispatch] = useReducer(
     createReducer(definition),
     createInitialState(definition),
   );
 
+  return useState(definition, state, dispatch);
+}
+
+function useState(
+  definition: Machine.Definition.Impl,
+  state: Machine.State.Impl,
+  dispatch: React.Dispatch<InternalEvent>,
+) {
   const send = useConstant(
     () => (sendable: Machine.Sendable.Impl) =>
       dispatch({ type: "SEND", sendable }),
@@ -202,6 +255,10 @@ function createLogger(definition: Machine.Definition.Impl) {
   };
 }
 
-export default useStateMachine as unknown as UseStateMachine;
+export const useStateMachine = $useStateMachine as unknown as UseStateMachine;
+export const createStateMachine =
+  $createStateMachine as unknown as CreateStateMachine;
+export const useExternalStateMachine =
+  $useExternalStateMachine as unknown as UseExternalStateMachine;
 
 export const t = <T>() => ({ [$$t]: undefined as T });
