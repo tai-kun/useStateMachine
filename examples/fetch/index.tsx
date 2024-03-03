@@ -1,8 +1,8 @@
+import useStateMachine, { t } from "@cassiozen/usestatemachine";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import useStateMachine, { t } from "@cassiozen/usestatemachine";
-import "./index.css";
 import Cup from "./Cup";
+import "./index.css";
 
 /*
  * In this example we're fetching some data with included retry logic (Will retry 2 times before giving up)
@@ -39,7 +39,7 @@ function App() {
               }
               const coffees = await response.json();
               setContext((context) => ({ data: coffees, ...context })).send(
-                "SUCCESS"
+                "SUCCESS",
               );
             } catch (error) {
               setContext((context) => ({

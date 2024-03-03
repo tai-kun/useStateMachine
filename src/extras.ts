@@ -4,7 +4,7 @@ export const R = {
   get: <R extends R.Unknown>(r: R, k: R.Key<R>) =>
     (r as any)[k] as R.Value<R> | undefined,
   concat: <R1 extends R.Unknown, R2 extends R.Unknown>(r1: R1, r2: R2) =>
-    ({ ...r1, ...r2 } as any as R.Concat<R1, R2>),
+    ({ ...r1, ...r2 }) as any as R.Concat<R1, R2>,
   fromMaybe: <R extends R.Unknown>(r: R | undefined) => r ?? ({} as R),
   keys: <R extends R.Unknown>(r: R) => Object.keys(r) as R.Key<R>[],
 };

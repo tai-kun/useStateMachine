@@ -1,8 +1,8 @@
+import useStateMachine, { t } from "@cassiozen/usestatemachine";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import useStateMachine, { t } from "@cassiozen/usestatemachine";
-import "./index.css";
 import formatTime from "./formatTime";
+import "./index.css";
 
 /*
  * In this example we simulate a somewhat complicated UI:

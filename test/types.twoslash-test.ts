@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { A, LS, UseStateMachine, CreateType } from "../src/types";
+import { A, CreateType, LS, UseStateMachine } from "../src/types";
 
 const useStateMachine = (() => []) as any as UseStateMachine;
 const t = (() => {}) as CreateType;
@@ -88,7 +88,7 @@ describe("Machine.Definition", () => {
         },
       });
       expect(query().text).toContain(
-        `"Error: Only string identifiers allowed"`
+        `"Error: Only string identifiers allowed"`,
       );
 
       useStateMachine({
@@ -145,7 +145,7 @@ describe("Machine.Definition", () => {
         });
 
         expect(query().text).toContain(
-          "Error: Use `t` to define payload type, eg `t<{ foo: number }>()`"
+          "Error: Use `t` to define payload type, eg `t<{ foo: number }>()`",
         );
 
         useStateMachine({
@@ -201,7 +201,7 @@ describe("Machine.Definition", () => {
           },
         });
         expect(query().text).toContain(
-          "Error: An event payload should be an object, eg `t<{ foo: number }>()`"
+          "Error: An event payload should be an object, eg `t<{ foo: number }>()`",
         );
 
         useStateMachine({
@@ -241,7 +241,7 @@ describe("Machine.Definition", () => {
         });
 
         expect(query().text).toContain(
-          "Error: An event payload cannot have a property `type` as it's already defined. In this case as 'X'"
+          "Error: An event payload cannot have a property `type` as it's already defined. In this case as 'X'",
         );
 
         useStateMachine({
@@ -352,7 +352,7 @@ describe("Machine.Definition", () => {
         });
 
         expect(query().text).toContain(
-          "Error: Use `t` to define type, eg `t<{ foo: number }>()`"
+          "Error: Use `t` to define type, eg `t<{ foo: number }>()`",
         );
 
         useStateMachine({
@@ -440,7 +440,7 @@ describe("Machine.Definition", () => {
     });
 
     it("doesn't infer narrowest", () => {
-      let [state] = useStateMachine({
+      const [state] = useStateMachine({
         schema: {},
         context: { foo: "hello" },
         initial: "a",
@@ -585,7 +585,7 @@ describe("Machine.Definition", () => {
       });
 
       expect(query().text).toContain(
-        "Error: '$$exhaustive' is a reserved name"
+        "Error: '$$exhaustive' is a reserved name",
       );
 
       useStateMachine({
@@ -613,7 +613,7 @@ describe("Machine.Definition", () => {
       });
 
       expect(query().text).toContain(
-        "Error: '$$exhaustive' is a reserved name"
+        "Error: '$$exhaustive' is a reserved name",
       );
 
       useStateMachine({
@@ -721,7 +721,7 @@ describe("Machine.Definition", () => {
         },
       });
       expect(query().text).toContain(
-        "Error: Event type 'Z' is not found in schema.events which is marked as exhaustive"
+        "Error: Event type 'Z' is not found in schema.events which is marked as exhaustive",
       );
 
       useStateMachine({
@@ -766,7 +766,7 @@ describe("Machine.Definition", () => {
         },
       });
       expect(query().text).toContain(
-        "Error: Event type 'Z' is not found in schema.events which is marked as exhaustive"
+        "Error: Event type 'Z' is not found in schema.events which is marked as exhaustive",
       );
 
       useStateMachine({
@@ -824,7 +824,7 @@ describe("Machine.Definition", () => {
                 A.areEqual<
                   typeof effectParameter.event,
                   { type: "X"; foo: number } | { type: "Z"; baz: string }
-                >()
+                >(),
               );
             });
 
@@ -836,18 +836,18 @@ describe("Machine.Definition", () => {
                     sendable:
                       | { type: "X"; foo: number }
                       | { type: "Y"; bar?: number }
-                      | { type: "Z"; baz: string }
+                      | { type: "Z"; baz: string },
                   ): void;
                   (sendable: "Y"): void;
                 }
-              >()
+              >(),
             );
 
             A.test(
-              A.areEqual<typeof effectParameter.context, { foo?: number }>()
+              A.areEqual<typeof effectParameter.context, { foo?: number }>(),
             );
 
-            let { send } = effectParameter.setContext((context) => {
+            const { send } = effectParameter.setContext((context) => {
               A.test(A.areEqual<typeof context, { foo?: number }>());
               return {};
             });
@@ -863,11 +863,11 @@ describe("Machine.Definition", () => {
                     sendable:
                       | { type: "X"; foo: number }
                       | { type: "Y"; bar?: number }
-                      | { type: "Z"; baz: string }
+                      | { type: "Z"; baz: string },
                   ): void;
                   (sendable: "Y"): void;
                 }
-              >()
+              >(),
             );
 
             return (cleanupParameter) => {
@@ -876,7 +876,7 @@ describe("Machine.Definition", () => {
                   A.areEqual<
                     typeof cleanupParameter.event,
                     { type: "Y"; bar?: number } | { type: "Z"; baz: string }
-                  >()
+                  >(),
                 );
               });
 
@@ -888,18 +888,18 @@ describe("Machine.Definition", () => {
                       sendable:
                         | { type: "X"; foo: number }
                         | { type: "Y"; bar?: number }
-                        | { type: "Z"; baz: string }
+                        | { type: "Z"; baz: string },
                     ): void;
                     (sendable: "Y"): void;
                   }
-                >()
+                >(),
               );
 
               A.test(
-                A.areEqual<typeof cleanupParameter.context, { foo?: number }>()
+                A.areEqual<typeof cleanupParameter.context, { foo?: number }>(),
               );
 
-              let { send } = cleanupParameter.setContext((context) => {
+              const { send } = cleanupParameter.setContext((context) => {
                 A.test(A.areEqual<typeof context, { foo?: number }>());
                 return {};
               });
@@ -915,11 +915,11 @@ describe("Machine.Definition", () => {
                       sendable:
                         | { type: "X"; foo: number }
                         | { type: "Y"; bar?: number }
-                        | { type: "Z"; baz: string }
+                        | { type: "Z"; baz: string },
                     ): void;
                     (sendable: "Y"): void;
                   }
-                >()
+                >(),
               );
             };
           },
@@ -958,7 +958,7 @@ describe("Machine.Definition", () => {
                 A.areEqual<
                   keyof typeof parameter,
                   "event" | "send" | "context" | "setContext"
-                >()
+                >(),
               );
             },
           },
@@ -982,7 +982,7 @@ describe("Machine.Definition", () => {
       expect(query().text).toContain(
         "Oops you have met a TypeScript limitation, " +
           "please add `on: {}` to state nodes that only have an `effect` property. " +
-          "See the documentation to learn more."
+          "See the documentation to learn more.",
       );
 
       useStateMachine(
@@ -991,9 +991,9 @@ describe("Machine.Definition", () => {
           [
             "Oops you have met a TypeScript limitation, ",
             "please add `on: {}` to state nodes that only have an `effect` property. ",
-            "See the documentation to learn more."
+            "See the documentation to learn more.",
           ]
-        >
+        >,
       );
     });
   });
@@ -1126,7 +1126,7 @@ describe("Machine.Definition", () => {
                         context: { foo: number };
                         event: { type: "X"; foo: string };
                       }
-                    >()
+                    >(),
                   );
 
                   return true;
@@ -1151,7 +1151,7 @@ describe("Machine.Definition", () => {
 });
 
 describe("UseStateMachine", () => {
-  let [state, send] = useStateMachine({
+  const [state, send] = useStateMachine({
     schema: {
       events: {
         X: t<{ foo: number }>(),
@@ -1200,7 +1200,7 @@ describe("UseStateMachine", () => {
             nextEventsT: ("Y" | "Z")[];
             nextEvents: ("X" | "Y" | "Z")[];
           }
-      >()
+      >(),
     );
   });
 
@@ -1213,17 +1213,17 @@ describe("UseStateMachine", () => {
             sendable:
               | { type: "X"; foo: number }
               | { type: "Y"; bar?: number }
-              | { type: "Z" }
+              | { type: "Z" },
           ): void;
           (sendable: "Y" | "Z"): void;
         }
-      >()
+      >(),
     );
   });
 });
 
 describe("Machine.Definition.FromTypeParamter", () => {
-  let [state, send] = useStateMachine({
+  const [state, send] = useStateMachine({
     context: { toggleCount: 0 },
     initial: "inactive",
     states: {
@@ -1256,19 +1256,19 @@ describe("Machine.Definition.FromTypeParamter", () => {
           nextEventsT: "TOGGLE"[];
           nextEvents: "TOGGLE"[];
         }
-    >()
+    >(),
   );
 
   A.test(
     A.areEqual<
       typeof send,
       { (sendable: { type: "TOGGLE" }): void; (sendable: "TOGGLE"): void }
-    >()
+    >(),
   );
 });
 
 describe("fix(Machine.State['nextEvents']): only normalize don't widen", () => {
-  let [state] = useStateMachine({
+  const [state] = useStateMachine({
     schema: {
       events: { Y: t<{}>() },
     },
@@ -1284,7 +1284,7 @@ describe("fix(Machine.State['nextEvents']): only normalize don't widen", () => {
 });
 
 describe("workaround for #65", () => {
-  let [_, send] = useStateMachine({
+  const [_, send] = useStateMachine({
     schema: {
       events: {
         A: t<{ value: string }>(),
@@ -1307,6 +1307,6 @@ describe("workaround for #65", () => {
         (sendable: { type: "A"; value: string } | { type: "B" }): void;
         (sendable: "B"): void;
       }
-    >()
+    >(),
   );
 });

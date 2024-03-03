@@ -1,13 +1,16 @@
-import { renderHook, act } from "@testing-library/react-hooks";
+import { act, renderHook } from "@testing-library/react-hooks";
 import _useStateMachine, { t, Console } from "../src";
 
 let log = "";
-const logger: Console["log"] = (...xs) =>
-  (log += xs.reduce(
+const logger: Console["log"] = (...xs) => {
+  log += xs.reduce(
     (a, x) => a + (typeof x === "string" ? x : JSON.stringify(x)),
-    ""
-  ));
-const clearLog = () => (log = "");
+    "",
+  );
+};
+const clearLog = () => {
+  log = "";
+};
 
 const useStateMachine = ((d: any) =>
   _useStateMachine({
@@ -29,7 +32,7 @@ describe("useStateMachine", () => {
               on: { DEACTIVATE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       expect(result.current[0]).toStrictEqual({
@@ -53,7 +56,7 @@ describe("useStateMachine", () => {
               on: { DEACTIVATE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       act(() => {
@@ -86,7 +89,7 @@ describe("useStateMachine", () => {
           on: {
             FORCE_ACTIVATE: "active",
           },
-        })
+        }),
       );
 
       act(() => {
@@ -116,7 +119,7 @@ describe("useStateMachine", () => {
               on: { DEACTIVATE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       act(() => {
@@ -146,7 +149,7 @@ describe("useStateMachine", () => {
               on: { TOGGLE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       act(() => {
@@ -184,7 +187,7 @@ describe("useStateMachine", () => {
               },
             },
           },
-        })
+        }),
       );
 
       act(() => {
@@ -223,7 +226,7 @@ describe("useStateMachine", () => {
               },
             },
           },
-        })
+        }),
       );
 
       act(() => {
@@ -257,7 +260,7 @@ describe("useStateMachine", () => {
               on: { TOGGLE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       expect(result.current[0]).toStrictEqual({
@@ -291,7 +294,7 @@ describe("useStateMachine", () => {
               effect,
             },
           },
-        })
+        }),
       );
 
       act(() => {
@@ -321,7 +324,7 @@ describe("useStateMachine", () => {
               effect: finalEffect,
             },
           },
-        })
+        }),
       );
 
       expect(initialEffect).toHaveBeenCalledTimes(1);
@@ -351,7 +354,7 @@ describe("useStateMachine", () => {
               on: { TOGGLE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       act(() => {
@@ -387,7 +390,7 @@ describe("useStateMachine", () => {
               on: { TOGGLE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       act(() => {
@@ -420,7 +423,7 @@ describe("useStateMachine", () => {
               on: { TOGGLE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       expect(result.current[0]).toStrictEqual({
@@ -453,7 +456,7 @@ describe("useStateMachine", () => {
               on: { TOGGLE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       expect(result.current[0]).toStrictEqual({
@@ -481,7 +484,7 @@ describe("useStateMachine", () => {
               },
             },
           },
-        })
+        }),
       );
 
       act(() => {
@@ -515,7 +518,7 @@ describe("useStateMachine", () => {
               on: { TOGGLE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       act(() => {
@@ -548,7 +551,7 @@ describe("useStateMachine", () => {
                 send("invalid"),
             },
           },
-        })
+        }),
       );
 
       expect(log).toMatch(/invalid/);
@@ -568,7 +571,7 @@ describe("useStateMachine", () => {
                 send({ type: "invalid" }),
             },
           },
-        })
+        }),
       );
 
       expect(log).toMatch(/invalid/);
@@ -587,16 +590,22 @@ describe("useStateMachine", () => {
               on: { TOGGLE: "inactive" },
             },
           },
-        })
+        }),
       );
 
       act(() => {
         rerender();
       });
 
-      if (result.all[0] instanceof Error) throw result.all[0];
-      else if (result.all[1] instanceof Error) throw result.all[1];
-      else expect(result.all[0][1]).toBe(result.all[1][1]);
+      if (result.all[0] instanceof Error) {
+        throw result.all[0];
+      }
+
+      if (result.all[1] instanceof Error) {
+        throw result.all[1];
+      }
+
+      expect(result.all[0][1]).toBe(result.all[1][1]);
     });
   });
 });
