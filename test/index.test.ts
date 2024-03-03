@@ -1,23 +1,6 @@
 import "global-jsdom/register";
 import { act, renderHook } from "@testing-library/react";
-import _useStateMachine, { t, Console } from "../src";
-
-let log = "";
-const logger: Console["log"] = (...xs) => {
-  log += xs.reduce(
-    (a, x) => a + (typeof x === "string" ? x : JSON.stringify(x)),
-    "",
-  );
-};
-const clearLog = () => {
-  log = "";
-};
-
-const useStateMachine = ((d: any) =>
-  _useStateMachine({
-    ...d,
-    console: { log: logger },
-  })) as typeof _useStateMachine;
+import useStateMachine, { t } from "../src";
 
 describe("useStateMachine", () => {
   describe("States & Transitions", () => {
@@ -538,8 +521,22 @@ describe("useStateMachine", () => {
     });
   });
   describe("Verbose Mode (Logger)", () => {
+    const format = (...xs: any[]) =>
+      xs.reduce(
+        (a, x) => a + (typeof x === "string" ? x : JSON.stringify(x)),
+        "",
+      );
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+
+    afterEach(() => {
+      logSpy.mockClear();
+    });
+
+    afterAll(() => {
+      logSpy.mockRestore();
+    });
+
     it("should log when invalid event is provided as string", () => {
-      clearLog();
       renderHook(() =>
         useStateMachine({
           verbose: true,
@@ -554,11 +551,11 @@ describe("useStateMachine", () => {
         }),
       );
 
-      expect(log).toMatch(/invalid/);
+      expect(logSpy).toHaveBeenCalled();
+      expect(format(logSpy.mock.calls.flat())).toMatch(/invalid/);
     });
 
     it("should log when invalid event is provided as object", () => {
-      clearLog();
       renderHook(() =>
         useStateMachine({
           verbose: true,
@@ -573,7 +570,8 @@ describe("useStateMachine", () => {
         }),
       );
 
-      expect(log).toMatch(/invalid/);
+      expect(logSpy).toHaveBeenCalled();
+      expect(format(logSpy.mock.calls.flat())).toMatch(/invalid/);
     });
   });
   describe("React performance", () => {
