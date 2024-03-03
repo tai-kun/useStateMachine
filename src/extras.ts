@@ -28,7 +28,11 @@ export namespace R {
 
 export const useConstant = <T>(compute: () => T): T => {
   const ref = useRef<T | null>(null);
-  if (ref.current === null) ref.current = compute();
+
+  if (ref.current === null) {
+    ref.current = compute();
+  }
+
   return ref.current;
 };
 

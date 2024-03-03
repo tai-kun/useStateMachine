@@ -2,7 +2,7 @@ import { useEffect, useReducer } from "react";
 import { R, assertNever, useConstant } from "./extras";
 import { $$t, Machine, UseStateMachine } from "./types";
 
-const useStateMachineImpl = (definition: Machine.Definition.Impl) => {
+function useStateMachine(definition: Machine.Definition.Impl) {
   const [state, dispatch] = useReducer(
     createReducer(definition),
     createInitialState(definition),
@@ -40,17 +40,18 @@ const useStateMachineImpl = (definition: Machine.Definition.Impl) => {
   }, [state.value, state.event]);
 
   return [state, send];
-};
+}
 
-const createInitialState = (
+function createInitialState(
   definition: Machine.Definition.Impl,
-): Machine.State.Impl => {
+): Machine.State.Impl {
   const nextEvents = R.keys(
     R.concat(
       R.fromMaybe(R.get(definition.states, definition.initial)!.on),
       R.fromMaybe(definition.on),
     ),
   );
+
   return {
     value: definition.initial,
     context: definition.context as Machine.Context.Impl,
@@ -58,21 +59,25 @@ const createInitialState = (
     nextEvents: nextEvents,
     nextEventsT: nextEvents,
   };
-};
+}
 
-const createReducer = (definition: Machine.Definition.Impl) => {
+function createReducer(definition: Machine.Definition.Impl) {
   const log = createLogger(definition);
+
   return (
     machineState: Machine.State.Impl,
     internalEvent: InternalEvent,
   ): Machine.State.Impl => {
     if (internalEvent.type === "SET_CONTEXT") {
       const nextContext = internalEvent.updater(machineState.context);
-      log(
-        "Context update",
-        ["Previous Context", machineState.context],
-        ["Next Context", nextContext],
-      );
+
+      if (process.env.NODE_ENV !== "production") {
+        log(
+          "Context update",
+          ["Previous Context", machineState.context],
+          ["Next Context", nextContext],
+        );
+      }
 
       return { ...machineState, context: nextContext };
     }
@@ -88,41 +93,57 @@ const createReducer = (definition: Machine.Definition.Impl) => {
         R.get(R.fromMaybe(definition.on), event.type);
 
       if (!resolvedTransition) {
-        log(
-          `Current state doesn't listen to event type "${event.type}".`,
-          ["Current State", machineState],
-          ["Event", event],
-        );
+        if (process.env.NODE_ENV !== "production") {
+          log(
+            `Current state doesn't listen to event type "${event.type}".`,
+            ["Current State", machineState],
+            ["Event", event],
+          );
+        }
+
         return machineState;
       }
 
       const [nextStateValue, didGuardDeny = false] = (() => {
-        if (typeof resolvedTransition === "string") return [resolvedTransition];
-        if (resolvedTransition.guard === undefined)
+        if (typeof resolvedTransition === "string") {
+          return [resolvedTransition];
+        }
+
+        if (resolvedTransition.guard === undefined) {
           return [resolvedTransition.target];
-        if (resolvedTransition.guard({ context, event }))
+        }
+
+        if (resolvedTransition.guard({ context, event })) {
           return [resolvedTransition.target];
+        }
+
         return [resolvedTransition.target, true];
       })() as [Machine.StateValue.Impl, true?];
 
       if (didGuardDeny) {
-        log(
-          `Transition from "${machineState.value}" to "${nextStateValue}" denied by guard`,
-          ["Event", event],
-          ["Context", context],
-        );
+        if (process.env.NODE_ENV !== "production") {
+          log(
+            `Transition from "${machineState.value}" to "${nextStateValue}" denied by guard`,
+            ["Event", event],
+            ["Context", context],
+          );
+        }
+
         return machineState;
       }
-      log(`Transition from "${machineState.value}" to "${nextStateValue}"`, [
-        "Event",
-        event,
-      ]);
+
+      if (process.env.NODE_ENV !== "production") {
+        log(`Transition from "${machineState.value}" to "${nextStateValue}"`, [
+          "Event",
+          event,
+        ]);
+      }
 
       const resolvedStateNode = R.get(definition.states, nextStateValue)!;
-
       const nextEvents = R.keys(
         R.concat(R.fromMaybe(resolvedStateNode.on), R.fromMaybe(definition.on)),
       );
+
       return {
         value: nextStateValue,
         context,
@@ -134,7 +155,7 @@ const createReducer = (definition: Machine.Definition.Impl) => {
 
     return assertNever(internalEvent);
   };
-};
+}
 
 interface SetContextEvent {
   type: "SET_CONTEXT";
@@ -154,34 +175,33 @@ export type Console = {
   groupEnd?: () => void;
 };
 
-// test sub-typing
-const defaultConsole: Console = console;
+function createLogger(definition: Machine.Definition.Impl) {
+  return function log(
+    groupLabel: string,
+    ...nested: [string, string | object][]
+  ): void {
+    if (!definition.verbose) {
+      return;
+    }
 
-const createLogger =
-  (definition: Machine.Definition.Impl) =>
-  (groupLabel: string, ...nested: [string, string | object][]) => {
-    if (!definition.verbose) return;
+    const console_ = definition.console || console;
 
-    const console = definition.console || defaultConsole;
-    if (
-      process.env["NODE_ENV"] === "development" ||
-      process.env["NODE_ENV"] === "test"
-    ) {
-      console.groupCollapsed?.(
+    if (process.env.NODE_ENV !== "production") {
+      console_.groupCollapsed?.(
         "%cuseStateMachine",
         "color: #888; font-weight: lighter;",
         groupLabel,
       );
 
       for (const message of nested) {
-        console.log(message[0], message[1]);
+        console_.log(message[0], message[1]);
       }
 
-      console.groupEnd?.();
+      console_.groupEnd?.();
     }
   };
+}
 
-const useStateMachine = useStateMachineImpl as unknown as UseStateMachine;
-export default useStateMachine;
+export default useStateMachine as unknown as UseStateMachine;
 
 export const t = <T>() => ({ [$$t]: undefined as T });
