@@ -328,7 +328,7 @@ describe("useStateMachine", () => {
       );
 
       expect(initialEffect).toHaveBeenCalledTimes(1);
-      expect(initialEffect.mock.calls[0][0]["context"]).toBe(false);
+      expect(initialEffect.mock.calls[0]![0]["context"]).toBe(false);
 
       expect(finalEffect).toHaveBeenCalledTimes(1);
       expect(finalEffect.mock.calls[0][0]["context"]).toBe(true);
@@ -605,7 +605,7 @@ describe("useStateMachine", () => {
         throw result.all[1];
       }
 
-      expect(result.all[0][1]).toBe(result.all[1][1]);
+      expect(result.all[0]![1]).toBe(result.all[1]![1]);
     });
   });
 });
