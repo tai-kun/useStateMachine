@@ -21,7 +21,8 @@
     "size": "size-limit",
     "start": "dts watch",
     "test": "dts test",
-    "format": "biome format --write ./examples ./src ./test"
+    "format": "biome format --write ./examples ./src ./test",
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -30,8 +31,8 @@
     "@biomejs/biome": "^1.5.3",
     "@size-limit/preset-small-lib": "^9.0.0",
     "@testing-library/react-hooks": "^8.0.1",
-    "@tsconfig/create-react-app": "^2.0.2",
-    "@tsconfig/recommended": "^1.0.3",
+    "@tsconfig/node18": "^18.2.2",
+    "@tsconfig/strictest": "^2.0.3",
     "@types/jest": "^29.5.12",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
