@@ -1,6 +1,42 @@
 import { Console } from ".";
 import { R } from "./extras";
 
+/**
+ * @see https://usestatemachine.js.org/docs/api/
+ * @template D The state machine definition.
+ * @param definition The state machine definition.
+ * @returns A tuple containing the current state and a function to send events to the state machine.
+ * @example
+ * ```ts
+ * const [state, send] = useStateMachine({
+ *   initial: 'inactive',
+ *   states: {
+ *     inactive: {
+ *       on: { TOGGLE: 'active' },
+ *     },
+ *     active: {
+ *       on: { TOGGLE: 'inactive' },
+ *       effect() {
+ *         console.log('Just entered the Active state');
+ *         // Same cleanup pattern as `useEffect`:
+ *         // If you return a function, it will run when exiting the state.
+ *         return () => console.log('Just Left the Active state');
+ *       },
+ *     },
+ *   },
+ * });
+ * 
+ * console.log(state); // { value: 'inactive', nextEvents: ['TOGGLE'] }
+ * 
+ * // Refers to the TOGGLE event name for the state we are currently in.
+ * 
+ * send('TOGGLE');
+ * 
+ * // Logs: Just entered the Active state
+ * 
+ * console.log(state); // { value: 'active', nextEvents: ['TOGGLE'] }
+ * ```
+ */
 export type UseStateMachine = <D extends Machine.Definition<D>>(
   definition: A.InferNarrowestObject<D>,
 ) => [
