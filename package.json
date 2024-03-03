@@ -25,21 +25,22 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "react": ">=16.8.0"
+    "react": "^18.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
     "@size-limit/preset-small-lib": "^11.0.2",
-    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/react": "^14.2.1",
     "@tsconfig/node18": "^18.2.2",
     "@tsconfig/strictest": "^2.0.3",
     "@types/jest": "^29.5.12",
-    "@types/react": "^17.0.38",
-    "@types/react-dom": "^17.0.11",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
     "@typescript/twoslash": "^2.1.0",
     "dts-cli": "^2.0.4",
+    "global-jsdom": "^24.0.0",
     "husky": "^9.0.11",
-    "react": ">=16.8.0",
+    "react": "^18.0.0",
     "size-limit": "^11.0.2",
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
@@ -61,5 +62,8 @@
   ],
   "volta": {
     "node": "18.19.1"
+  },
+  "dependencies": {
+    "jsdom": "^24.0.0"
   }
 }

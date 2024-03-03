@@ -1,4 +1,5 @@
-import { act, renderHook } from "@testing-library/react-hooks";
+import "global-jsdom/register";
+import { act, renderHook } from "@testing-library/react";
 import _useStateMachine, { t, Console } from "../src";
 
 let log = "";
@@ -546,9 +547,8 @@ describe("useStateMachine", () => {
           states: {
             idle: {
               on: null,
-              effect: ({ send }) =>
-                // @ts-expect-error
-                send("invalid"),
+              // @ts-expect-error
+              effect: ({ send }) => send("invalid"),
             },
           },
         }),
@@ -566,9 +566,8 @@ describe("useStateMachine", () => {
           states: {
             idle: {
               on: null,
-              effect: ({ send }) =>
-                // @ts-expect-error
-                send({ type: "invalid" }),
+              // @ts-expect-error
+              effect: ({ send }) => send({ type: "invalid" }),
             },
           },
         }),
@@ -593,19 +592,23 @@ describe("useStateMachine", () => {
         }),
       );
 
+      if (result.current instanceof Error) {
+        throw result.current;
+      }
+
+      const [, send1] = result.current;
+
       act(() => {
         rerender();
       });
 
-      if (result.all[0] instanceof Error) {
-        throw result.all[0];
+      if (result.current instanceof Error) {
+        throw result.current;
       }
 
-      if (result.all[1] instanceof Error) {
-        throw result.all[1];
-      }
+      const [, send2] = result.current;
 
-      expect(result.all[0]![1]).toBe(result.all[1]![1]);
+      expect(send1).toBe(send2);
     });
   });
 });
