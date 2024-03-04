@@ -29,15 +29,6 @@ function useSyncedStateMachine(definition: Machine.Definition.Impl) {
     function dispatch(action: ReducerAction): void {
       const state = reducer(stateRef.current, action);
 
-      function setContext(updater: Machine.ContextUpdater.Impl) {
-        dispatch({
-          type: "SET_CONTEXT",
-          updater,
-        });
-
-        return { send };
-      }
-
       if (
         !Object.is(state.value, stateRef.current.value) ||
         !Object.is(state.event, stateRef.current.event)
@@ -53,13 +44,13 @@ function useSyncedStateMachine(definition: Machine.Definition.Impl) {
 
         if (typeof cleanup === "function") {
           cleanupRef.current = () => {
+            cleanupRef.current = undefined;
             cleanup?.({
               send,
               event: state.event,
               context: state.context,
               setContext,
             });
-            cleanupRef.current = undefined;
           };
         }
       }
@@ -72,6 +63,15 @@ function useSyncedStateMachine(definition: Machine.Definition.Impl) {
         type: "SEND",
         sendable,
       });
+    }
+
+    function setContext(updater: Machine.ContextUpdater.Impl) {
+      dispatch({
+        type: "SET_CONTEXT",
+        updater,
+      });
+
+      return { send };
     }
 
     return [stateRef, send];
