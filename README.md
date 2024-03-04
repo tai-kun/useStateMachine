@@ -4,6 +4,11 @@
 
 **The <1 kb _state machine_ hook for React:**
 
+[![Canary Release on NPM](https://github.com/tai-kun/useStateMachine/actions/workflows/canary-release.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/canary-release.yaml)
+[![Release on NPM](https://github.com/tai-kun/useStateMachine/actions/workflows/release.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/release.yaml)
+[![Test](https://github.com/tai-kun/useStateMachine/actions/workflows/test.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/test.yaml)
+[![npm package](https://badge.fury.io/js/@tai-kun%2Fuse-state-machine.svg)](https://badge.fury.io/js/@tai-kun%2Fuse-state-machine)
+
 See the user-facing docs at: [usestatemachine.js.org](https://usestatemachine.js.org/)
 
 - Batteries Included: Despite the tiny size, useStateMachine is feature complete (Entry/exit callbacks, Guarded transitions & Extended State - Context)
