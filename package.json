@@ -45,21 +45,14 @@
     "@types/jest": "^29.5.12",
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",
-    "@typescript/twoslash": "^2.1.0",
     "dts-cli": "^2.0.4",
     "esbuild": "^0.20.1",
     "global-jsdom": "^24.0.0",
-    "husky": "^9.0.11",
     "jsdom": "^24.0.0",
     "react": "^18.0.0",
     "size-limit": "^11.0.2",
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "biome lint ./examples ./scripts ./src ./test"
-    }
   },
   "jest": {
     "resetMocks": true
