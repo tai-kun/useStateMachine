@@ -15,7 +15,13 @@ See the user-facing docs at: [usestatemachine.js.org](https://usestatemachine.js
 - Amazing TypeScript experience: Focus on automatic type inference (auto completion for both TypeScript & JavaScript users without having to manually define the typings) while giving you the option to specify and augment the types for context & events.
 - Made for React: useStateMachine follow idiomatic React patterns you and your team are already familiar with. (The library itself is actually a thin wrapper around React's useReducer & useEffect.)
 
-<img width="354" alt="size badge" src="https://user-images.githubusercontent.com/33676/126902516-51f46526-3023-43c7-afd4-17df2e89a3a1.png">
+<div style="display: grid; grid-template-columns: auto 1fr; grid-gap: 10px; color: CanvasText; border: 2px solid currentColor; border-radius: 16px; padding: 16px;">
+  <div style="font-family: monospace; grid-column: span 2;">dist/index.min.mjs</div>
+  <div style="font-family: monospace;">Size limit:</div>
+  <div style="font-family: monospace; color: lightgreen; font-weight: 600;">1 kB</div>
+  <div style="font-family: monospace;">Size:</div>
+  <div style="font-family: monospace;"><span style="; color: lightgreen; font-weight: 600;">763 B</span> with all dependencies, minified and brotlied</div>
+</div>
 
 ## Examples
 
