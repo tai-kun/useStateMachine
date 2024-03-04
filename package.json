@@ -18,6 +18,11 @@
       "types": "./dist/external.d.ts",
       "import": "./dist/external.mjs",
       "require": "./dist/external.cjs"
+    },
+    "./sync": {
+      "types": "./dist/sync.d.ts",
+      "import": "./dist/sync.mjs",
+      "require": "./dist/sync.cjs"
     }
   },
   "engines": {
