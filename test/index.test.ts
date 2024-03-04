@@ -9,6 +9,7 @@ global.__DEV__ = true;
 
 describe.each<typeof useStateMachine>([
   useStateMachine,
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
   (d: any) => useExternalStateMachine(useMemo(() => createStateMachine(d), [])),
 ])("", (useHook) => {
   describe("States & Transitions", () => {

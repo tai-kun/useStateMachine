@@ -276,8 +276,7 @@ export function createReducer(definition: Machine.Definition.Impl) {
         if (didGuardDeny) {
           if (__DEV__) {
             log(
-              `Transition from "${state.value}" to "${nextStateValue}"` +
-                " denied by guard",
+              `Transition from "${state.value}" to "${nextStateValue}" denied by guard`,
               ["Event", event],
               ["Context", context],
             );
@@ -356,39 +355,36 @@ export function useMachine(
       },
   );
 
-  useEffect(
-    () => {
-      function setContext(updater: Machine.ContextUpdater.Impl) {
-        dispatch({
-          type: "SET_CONTEXT",
-          updater,
-        });
-
-        return { send };
-      }
-
-      const { effect } = R.get(definition.states, state.value) || {};
-      const cleanup = effect?.({
-        send,
-        event: state.event,
-        context: state.context,
-        setContext,
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
+  useEffect(() => {
+    function setContext(updater: Machine.ContextUpdater.Impl) {
+      dispatch({
+        type: "SET_CONTEXT",
+        updater,
       });
 
-      return typeof cleanup === "function"
-        ? () => {
-            cleanup?.({
-              send,
-              event: state.event,
-              context: state.context,
-              setContext,
-            });
-          }
-        : undefined;
-    },
-    // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
-    [state.value, state.event],
-  );
+      return { send };
+    }
+
+    const { effect } = R.get(definition.states, state.value) || {};
+    const cleanup = effect?.({
+      send,
+      event: state.event,
+      context: state.context,
+      setContext,
+    });
+
+    return typeof cleanup === "function"
+      ? () => {
+          cleanup?.({
+            send,
+            event: state.event,
+            context: state.context,
+            setContext,
+          });
+        }
+      : undefined;
+  }, [state.value, state.event]);
 
   return [state, send];
 }

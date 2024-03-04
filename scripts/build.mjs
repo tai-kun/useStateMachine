@@ -41,10 +41,13 @@ function resolve() {
 
     try {
       fs.accessSync(file, fs.constants.R_OK);
+      accessCache[file] = true;
 
-      return (accessCache[file] = true);
+      return true;
     } catch {
-      return (accessCache[file] = false);
+      accessCache[file] = false;
+
+      return false;
     }
   }
 
@@ -53,7 +56,7 @@ function resolve() {
    * @param {string} file
    */
   function getBuiltPath(dir, file) {
-    dir = path.join(dir, file);
+    const name = path.join(dir, file);
     const pairs = Object.entries({
       ".ts": ".js",
       ".tsx": ".jsx",
@@ -62,7 +65,7 @@ function resolve() {
     });
 
     for (const [src, dst] of pairs) {
-      if (readOk(dir + src)) {
+      if (readOk(name + src)) {
         return file + dst;
       }
     }
