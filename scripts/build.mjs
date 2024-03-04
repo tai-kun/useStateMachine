@@ -79,8 +79,8 @@ function resolve() {
         }
 
         if (
-          args.resolveDir.includes("node_modules")
-          || !args.resolveDir.startsWith(".")
+          args.resolveDir.includes("node_modules") ||
+          !args.resolveDir.startsWith(".")
         ) {
           return {
             external: true,
