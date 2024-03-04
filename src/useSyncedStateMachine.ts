@@ -5,8 +5,8 @@ import {
   createInitialState,
   createReducer,
   useConstant,
-} from "./misc";
-import type { A, Machine } from "./types";
+} from "./core/extra";
+import type { A, Machine } from "./core/types";
 
 export type UseSyncedStateMachine = <const D extends Machine.Definition<D>>(
   definition: A.InferNarrowestObject<D>,
@@ -80,4 +80,4 @@ function useSyncedStateMachine(definition: Machine.Definition.Impl) {
 
 export default useSyncedStateMachine as unknown as UseSyncedStateMachine;
 
-export { t } from "./utils";
+export { t } from "./util";

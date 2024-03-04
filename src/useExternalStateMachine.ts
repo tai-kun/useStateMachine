@@ -5,8 +5,8 @@ import {
   createReducer,
   useConstant,
   useMachine,
-} from "./misc";
-import type { A, Machine } from "./types";
+} from "./core/extra";
+import type { A, Machine } from "./core/types";
 
 export type CreateStateMachine = <const D extends Machine.Definition<D>>(
   definition: A.InferNarrowestObject<D>,
@@ -106,4 +106,4 @@ export default useExternalStateMachine as unknown as UseExternalStateMachine;
  */
 export const createStateMachine = $createStateMachine as CreateStateMachine;
 
-export { t } from "./utils";
+export { t } from "./util";

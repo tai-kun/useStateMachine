@@ -1,5 +1,5 @@
-import type { R, ConsoleInterface, ReducerAction } from "./misc"
-import type { $$t } from "./utils"
+import type { $$t } from "../util"
+import type { ConsoleInterface, R, ReducerAction } from "./extra"
 
 /**
  * State machine.

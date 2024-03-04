@@ -182,7 +182,7 @@ const config = [
 
     // Input
 
-    entryPoints: ["src/index.ts"],
+    entryPoints: ["src/useStateMachine.ts"],
 
     // Output contents
 
@@ -191,7 +191,7 @@ const config = [
     // Output location
 
     write: true,
-    outfile: "dist/index.min.mjs",
+    outfile: "dist/usestatemachine.esm.production.min.js",
 
     // Optimization
 

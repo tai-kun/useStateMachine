@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
-    "ignore": ["src/types.ts"]
+    "ignore": ["src/core/types.ts"]
   },
   "linter": {
     "rules": {

@@ -14,15 +14,20 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
-    "./external": {
-      "types": "./dist/external.d.ts",
-      "import": "./dist/external.mjs",
-      "require": "./dist/external.cjs"
+    "./default": {
+      "types": "./dist/useStateMachine.d.ts",
+      "import": "./dist/useStateMachine.mjs",
+      "require": "./dist/useStateMachine.cjs"
     },
-    "./sync": {
-      "types": "./dist/sync.d.ts",
-      "import": "./dist/sync.mjs",
-      "require": "./dist/sync.cjs"
+    "./external": {
+      "types": "./dist/useExternalStateMachine.d.ts",
+      "import": "./dist/useExternalStateMachine.mjs",
+      "require": "./dist/useExternalStateMachine.cjs"
+    },
+    "./synced": {
+      "types": "./dist/useSyncedStateMachine.d.ts",
+      "import": "./dist/useSyncedStateMachine.mjs",
+      "require": "./dist/useSyncedStateMachine.cjs"
     }
   },
   "engines": {
@@ -64,7 +69,7 @@
   },
   "size-limit": [
     {
-      "path": "dist/index.min.mjs",
+      "path": "dist/usestatemachine.esm.production.min.js",
       "limit": "1 kB",
       "brotli": true
     }
