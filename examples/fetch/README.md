@@ -19,7 +19,7 @@ For local development, you'll have to update `package.json` and `tsconfig.json`:
   "alias": {
     "react": "../../node_modules/react",
     "scheduler/tracing": "../../node_modules/scheduler/tracing-profiling",
-    "@cassiozen/usestatemachine": "../../dist"
+    "@tai-kun/use-state-machine": "../../dist"
   },
 ```
 
@@ -29,7 +29,7 @@ For local development, you'll have to update `package.json` and `tsconfig.json`:
 
 ```json
   "paths": {
-    "@cassiozen/usestatemachine": ["../../dist/index"],
+    "@tai-kun/use-state-machine": ["../../dist/index"],
   },
 ```
 

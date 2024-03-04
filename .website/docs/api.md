@@ -52,7 +52,7 @@ States are defined with the state name as a key and an object with two possible 
 Describes which events this state responds to (and to which other state the machine should transition to when this event is sent):
 
 ```ts twoslash
-import useStateMachine from "@cassiozen/usestatemachine";
+import useStateMachine from "@tai-kun/use-state-machine";
 // ---cut---
 const [state, send] = useStateMachine({
   initial: "active",
@@ -86,7 +86,7 @@ on: {
 Guards are functions that run before actually making the state transition: If the guard returns false the transition will be denied.
 
 ```ts twoslash
-import useStateMachine from "@cassiozen/usestatemachine";
+import useStateMachine from "@tai-kun/use-state-machine";
 // ---cut---
 const [state, send] = useStateMachine({
   initial: "inactive",
@@ -116,7 +116,7 @@ The guard function receives an object with the current context and the event. Th
 Effects are triggered when the state machine enters a given state. If you return a function from your effect, it will be invoked when leaving that state (similarly to how useEffect works in React).
 
 ```ts twoslash
-import useStateMachine from "@cassiozen/usestatemachine";
+import useStateMachine from "@tai-kun/use-state-machine";
 // ---cut---
 const [state, send] = useStateMachine({
   initial: "active",
@@ -166,7 +166,7 @@ Besides the finite number of states, the state machine can have extended state (
 You can provide the initial context value in the state machine definition, then use the `setContext` function within your effects to change the context:
 
 ```ts twoslash
-import useStateMachine from "@cassiozen/usestatemachine";
+import useStateMachine from "@tai-kun/use-state-machine";
 // ---cut---
 const [state, send] = useStateMachine({
   context: { toggleCount: 0 },
@@ -200,7 +200,7 @@ Still, there are situations where you might want explicit control over the `cont
 _Typed Context example_
 
 ```ts twoslash
-import useStateMachine, { t } from "@cassiozen/usestatemachine";
+import useStateMachine, { t } from "@tai-kun/use-state-machine";
 
 const [state, send] = useStateMachine({
   schema: {
@@ -229,7 +229,7 @@ All events are type-infered by default, both in the string notation (`send("UPDA
 If you want, though, you can augment an already typed event to include arbitrary data (which can be useful to provide values to be used inside effects or to update the context). Example:
 
 ```ts twoslash
-import useStateMachine, { t } from "@cassiozen/usestatemachine";
+import useStateMachine, { t } from "@tai-kun/use-state-machine";
 // ---cut---
 const [machine, send] = useStateMachine({
   schema: {

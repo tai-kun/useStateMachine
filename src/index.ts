@@ -68,7 +68,7 @@ function useStateMachine(definition: Machine.Definition.Impl) {
  * Describes which events this state responds to (and to which other state the machine should transition to when this event is sent):
  *
  * ```ts twoslash
- * import useStateMachine from "@cassiozen/usestatemachine";
+ * import useStateMachine from "@tai-kun/use-state-machine";
  * // ---cut---
  * const [state, send] = useStateMachine({
  *   initial: "active",
@@ -102,7 +102,7 @@ function useStateMachine(definition: Machine.Definition.Impl) {
  * Guards are functions that run before actually making the state transition: If the guard returns false the transition will be denied.
  *
  * ```ts twoslash
- * import useStateMachine from "@cassiozen/usestatemachine";
+ * import useStateMachine from "@tai-kun/use-state-machine";
  * // ---cut---
  * const [state, send] = useStateMachine({
  *   initial: "inactive",
@@ -132,7 +132,7 @@ function useStateMachine(definition: Machine.Definition.Impl) {
  * Effects are triggered when the state machine enters a given state. If you return a function from your effect, it will be invoked when leaving that state (similarly to how useEffect works in React).
  *
  * ```ts twoslash
- * import useStateMachine from "@cassiozen/usestatemachine";
+ * import useStateMachine from "@tai-kun/use-state-machine";
  * // ---cut---
  * const [state, send] = useStateMachine({
  *   initial: "active",
@@ -182,7 +182,7 @@ function useStateMachine(definition: Machine.Definition.Impl) {
  * You can provide the initial context value in the state machine definition, then use the `setContext` function within your effects to change the context:
  *
  * ```ts twoslash
- * import useStateMachine from "@cassiozen/usestatemachine";
+ * import useStateMachine from "@tai-kun/use-state-machine";
  * // ---cut---
  * const [state, send] = useStateMachine({
  *   context: { toggleCount: 0 },

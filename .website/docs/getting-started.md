@@ -8,13 +8,13 @@ title: Getting Started
 ## install
 
 ```shell
-npm install @cassiozen/usestatemachine
+npm install @tai-kun/use-state-machine
 ```
 
 ## Sample Usage
 
 ```ts twoslash
-import useStateMachine from "@cassiozen/usestatemachine";
+import useStateMachine from "@tai-kun/use-state-machine";
 // ---cut---
 const [state, send] = useStateMachine({
   initial: "inactive",

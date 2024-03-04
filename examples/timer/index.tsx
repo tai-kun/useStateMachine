@@ -1,4 +1,4 @@
-import useStateMachine, { t } from "@cassiozen/usestatemachine";
+import useStateMachine, { t } from "@tai-kun/use-state-machine";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import formatTime from "./formatTime";

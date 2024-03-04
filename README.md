@@ -21,7 +21,7 @@ See the user-facing docs at: [usestatemachine.js.org](https://usestatemachine.js
 ## Installation
 
 ```bash
-npm install @cassiozen/usestatemachine
+npm install @tai-kun/use-state-machine
 ```
 
 ## Sample Usage
