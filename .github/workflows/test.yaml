@@ -40,6 +40,7 @@ jobs:
     name: Test on Node.js ${{ matrix.node }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node: ["18.x", "20.x", "21.x"]
     steps:
