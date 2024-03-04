@@ -1,6 +1,6 @@
+import type { UseStateMachine } from "../src";
 /* eslint-disable react-hooks/rules-of-hooks */
 import { A, type LS } from "../src/types";
-import type { UseStateMachine } from "../src";
 import { $$t } from "../src/utils";
 
 const useStateMachine = (() => []) as any as UseStateMachine;

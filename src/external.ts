@@ -1,12 +1,12 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
-import type { Machine, A } from "./types";
 import {
   type ReducerAction,
   createInitialState,
   createReducer,
-  useMachine,
   useConstant,
+  useMachine,
 } from "./misc";
+import type { A, Machine } from "./types";
 
 export type CreateStateMachine = <const D extends Machine.Definition<D>>(
   definition: A.InferNarrowestObject<D>,

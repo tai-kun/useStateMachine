@@ -1,6 +1,6 @@
+import { act, renderHook } from "@testing-library/react";
 import "global-jsdom/register";
 import { useMemo } from "react";
-import { act, renderHook } from "@testing-library/react";
 import useStateMachine, { t } from "../src";
 import useExternalStateMachine, { createStateMachine } from "../src/external";
 

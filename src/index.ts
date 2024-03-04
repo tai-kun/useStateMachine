@@ -1,6 +1,6 @@
 import { useReducer } from "react";
-import type { Machine, A } from "./types";
 import { createInitialState, createReducer, useMachine } from "./misc";
+import type { A, Machine } from "./types";
 
 export type UseStateMachine = <const D extends Machine.Definition<D>>(
   definition: A.InferNarrowestObject<D>,
