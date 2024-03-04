@@ -63,6 +63,8 @@ function useSyncedStateMachine(definition: Machine.Definition.Impl) {
           };
         }
       }
+
+      stateRef.current = state;
     }
 
     function send(sendable: Machine.Sendable.Impl): void {
