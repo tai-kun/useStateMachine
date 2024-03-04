@@ -28,8 +28,11 @@ function replace() {
   };
 }
 
-/** @returns {import("esbuild").Plugin} */
-function resolve() {
+/**
+ * @param {"cjs" | "esm"} fmt
+ * @returns {import("esbuild").Plugin}
+ */
+function resolve(fmt) {
   /** @type {Record<string, boolean>} */
   const accessCache = {};
 
@@ -58,10 +61,8 @@ function resolve() {
   function getBuiltPath(dir, file) {
     const name = path.join(dir, file);
     const pairs = Object.entries({
-      ".ts": ".js",
-      ".tsx": ".jsx",
-      "/index.ts": "/index.js",
-      "/index.tsx": "/index.jsx",
+      ".ts": fmt === "cjs" ? ".cjs" : ".mjs",
+      "/index.ts": fmt === "cjs" ? "/index.cjs" : "/index.mjs",
     });
 
     for (const [src, dst] of pairs) {
@@ -83,7 +84,7 @@ function resolve() {
 
         if (
           args.resolveDir.includes("node_modules") ||
-          !args.resolveDir.startsWith(".")
+          !args.path.startsWith(".")
         ) {
           return {
             external: true,
@@ -140,7 +141,7 @@ const config = [
 
     // Plugins
 
-    plugins: [replace(), resolve()],
+    plugins: [replace(), resolve("esm")],
   },
   // CJS
   {
@@ -170,7 +171,7 @@ const config = [
 
     // Plugins
 
-    plugins: [replace(), resolve()],
+    plugins: [replace(), resolve("cjs")],
   },
   // Bundled
   {
