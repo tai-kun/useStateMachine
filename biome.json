@@ -1,11 +1,17 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "formatter": {
-    "indentStyle": "space"
+  "files": {
+    "ignore": ["src/types.ts"]
   },
   "linter": {
     "rules": {
       "recommended": true,
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
+      },
       "complexity": {
         "noBannedTypes": "off",
         "useLiteralKeys": "off"
@@ -13,13 +19,10 @@
       "suspicious": {
         "noExplicitAny": "off",
         "noConfusingVoidType": "off"
-      },
-      "style": {
-        "noNonNullAssertion": "off"
-      },
-      "a11y": {
-        "noSvgWithoutTitle": "off"
       }
     }
+  },
+  "formatter": {
+    "indentStyle": "space"
   }
 }

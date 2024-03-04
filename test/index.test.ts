@@ -1,12 +1,8 @@
 import "global-jsdom/register";
 import { useMemo } from "react";
 import { act, renderHook } from "@testing-library/react";
-import {
-  useStateMachine,
-  useExternalStateMachine,
-  createStateMachine,
-  t,
-} from "../src";
+import useStateMachine, { t } from "../src";
+import useExternalStateMachine, { createStateMachine } from "../src/external";
 
 // @ts-expect-error
 global.__DEV__ = true;

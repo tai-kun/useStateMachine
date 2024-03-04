@@ -1,8 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { A, CreateType, LS, UseStateMachine } from "../src/types";
+import { A, type LS } from "../src/types";
+import type { UseStateMachine } from "../src";
+import { $$t } from "../src/utils";
 
 const useStateMachine = (() => []) as any as UseStateMachine;
-const t = (() => {}) as CreateType;
+const t = <T>() => ({}) as { [$$t]: T };
 
 const query = () =>
   (global as any).twoSlashQueries.shift() as {

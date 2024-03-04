@@ -1,264 +1,217 @@
-import { useEffect, useReducer, useSyncExternalStore } from "react";
-import { R, assertNever, useConstant } from "./extras";
-import {
-  $$t,
-  Machine,
-  UseStateMachine,
-  CreateStateMachine,
-  UseExternalStateMachine,
-} from "./types";
+import { useReducer } from "react";
+import type { Machine, A } from "./types";
+import { createInitialState, createReducer, useMachine } from "./misc";
 
-function $createStateMachine(definition: Machine.Definition.Impl) {
-  let state = createInitialState(definition);
-  const update = createReducer(definition);
-  const callbacks = new Set<(state: Machine.State.Impl) => void>();
+export type UseStateMachine = <const D extends Machine.Definition<D>>(
+  definition: A.InferNarrowestObject<D>,
+) => [
+  state: Machine.State<Machine.Definition.FromTypeParamter<D>>,
+  send: Machine.Send<Machine.Definition.FromTypeParamter<D>>,
+];
 
-  return {
-    getState() {
-      return state;
-    },
-    dispatch(internalEvent: InternalEvent) {
-      state = update(state, internalEvent);
-
-      for (const callback of callbacks) {
-        callback(state);
-      }
-    },
-    subscribe(callback: (state: Machine.State.Impl) => void) {
-      callbacks.add(callback);
-
-      return () => {
-        callbacks.delete(callback);
-      };
-    },
+function useStateMachine(definition: Machine.Definition.Impl) {
+  return useMachine(
     definition,
-  };
-}
-
-function $useExternalStateMachine(
-  machine: ReturnType<typeof $createStateMachine>,
-) {
-  const state = useSyncExternalStore(
-    useConstant(() => (notify) => machine.subscribe(notify)),
-    machine.getState,
-    machine.getState,
+    ...useReducer(createReducer(definition), createInitialState(definition)),
   );
-
-  return useState(machine.definition, state, machine.dispatch);
 }
 
-function $useStateMachine(definition: Machine.Definition.Impl) {
-  const [state, dispatch] = useReducer(
-    createReducer(definition),
-    createInitialState(definition),
-  );
+/**
+ * # API
+ *
+ * ```ts
+ * const [state, send] = useStateMachine(
+ *   // State Machine Definition
+ * );
+ * ```
+ *
+ * `useStateMachine` takes a JavaScript object as the state machine definition. It returns an array consisting of a `current machine state` object and a `send` function to trigger transitions.
+ *
+ * ## state
+ *
+ * The machine's `state` consists of 4 properties: `value`, `event`, `nextEvents` and `context`.
+ *
+ * `value` (string): Returns the name of the current state.
+ *
+ * `event` (`{type: string}`; Optional): The name of the last sent event that led to this state.
+ *
+ * `nextEvents` (`string[]`): An array with the names of available events to trigger transitions from this state.
+ *
+ * `context`: The state machine extended state. See "Extended State" below.
+ *
+ * ## Send events
+ *
+ * `send` takes an event as argument, provided in shorthand string format (e.g. "TOGGLE") or as an event object (e.g. `{ type: "TOGGLE" }`)
+ *
+ * If the current state accepts this event, and it is allowed (see guard), it will change the state machine state and execute effects.
+ *
+ * You can also send additional data with your event using the object notation (e.g. `{ type: "UPDATE" value: 10 }`). Check [schema](#schema-context--event-typing) for more information about strong typing the additional data.
+ *
+ * ## State Machine definition
+ *
+ * | Key     | Required | Description                                                                                                                     |
+ * | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
+ * | verbose |          | If true, will log every context & state changes. Log messages will be stripped out in the production build.                     |
+ * | schema  |          | For usage with TypeScript only. Optional strongly-typed context & events. More on schema [below](#schema-context--event-typing) |
+ * | context |          | Context is the machine's extended state. More on extended state [below](#extended-state-context)                                |
+ * | initial | \*       | The initial state node this machine should be in                                                                                |
+ * | states  | \*       | Define the possible finite states the state machine can be in.                                                                  |
+ *
+ * ## Defining States
+ *
+ * A finite state machine can be in only one of a finite number of states at any given time. As an application is interacted with, events cause it to change state.
+ *
+ * States are defined with the state name as a key and an object with two possible keys: `on` (which events this state responds to) and `effect` (run arbitrary code when entering or exiting this state):
+ *
+ * ### On (Events & transitions)
+ *
+ * Describes which events this state responds to (and to which other state the machine should transition to when this event is sent):
+ *
+ * ```ts twoslash
+ * import useStateMachine from "@cassiozen/usestatemachine";
+ * // ---cut---
+ * const [state, send] = useStateMachine({
+ *   initial: "active",
+ *   states: {
+ *     inactive: {
+ *       on: {
+ *         TOGGLE: "active",
+ *       },
+ *     },
+ *     active: {
+ *       on: {
+ *         TOGGLE: "inactive",
+ *       },
+ *     },
+ *   },
+ * });
+ * ```
+ *
+ * The event definition can also use the extended, object syntax, which allows for more control over the transition (like adding guards):
+ *
+ * ```ts
+ * on: {
+ *   TOGGLE: {
+ *     target: 'active',
+ *   },
+ * };
+ * ```
+ *
+ * #### Guards
+ *
+ * Guards are functions that run before actually making the state transition: If the guard returns false the transition will be denied.
+ *
+ * ```ts twoslash
+ * import useStateMachine from "@cassiozen/usestatemachine";
+ * // ---cut---
+ * const [state, send] = useStateMachine({
+ *   initial: "inactive",
+ *   states: {
+ *     inactive: {
+ *       on: {
+ *         TOGGLE: {
+ *           target: "active",
+ *           guard({ context, event }) {
+ *             // Return a boolean to allow or block the transition
+ *             return false;
+ *           },
+ *         },
+ *       },
+ *     },
+ *     active: {
+ *       on: { TOGGLE: "inactive" },
+ *     },
+ *   },
+ * });
+ * ```
+ *
+ * The guard function receives an object with the current context and the event. The event parameter always uses the object format (e.g. `{ type: 'TOGGLE' }`).
+ *
+ * ### Effects (entry/exit callbacks)
+ *
+ * Effects are triggered when the state machine enters a given state. If you return a function from your effect, it will be invoked when leaving that state (similarly to how useEffect works in React).
+ *
+ * ```ts twoslash
+ * import useStateMachine from "@cassiozen/usestatemachine";
+ * // ---cut---
+ * const [state, send] = useStateMachine({
+ *   initial: "active",
+ *   states: {
+ *     active: {
+ *       on: { TOGGLE: "inactive" },
+ *       effect({ send, setContext, event, context }) {
+ *         console.log("Just entered the Active state");
+ *         return () => console.log("Just Left the Active state");
+ *       },
+ *     },
+ *     inactive: {},
+ *   },
+ * });
+ * ```
+ *
+ * The effect function receives an object as parameter with four keys:
+ *
+ * - `send`: Takes an event as argument, provided in shorthand string format (e.g. "TOGGLE") or as an event object (e.g. `{ type: "TOGGLE" }`)
+ * - `setContext`: Takes an updater function as parameter to set a new context (more on context below). Returns an object with `send`, so you can set the context and send an event on a single line.
+ * - `event`: The event that triggered a transition to this state. (The event parameter always uses the object format (e.g. `{ type: 'TOGGLE' }`).).
+ * - `context` The context at the time the effect runs.
+ *
+ * In this example, the state machine will always send the "RETRY" event when entering the error state:
+ *
+ * ```typescript
+ * const [state, send] = useStateMachine({
+ *   initial: "loading",
+ *   states: {
+ *     // Other states here...
+ *     error: {
+ *       on: {
+ *         RETRY: "load",
+ *       },
+ *       effect({ send }) {
+ *         send("RETRY");
+ *       },
+ *     },
+ *   },
+ * });
+ * ```
+ *
+ * ## Extended state (context)
+ *
+ * Besides the finite number of states, the state machine can have extended state (known as context).
+ *
+ * You can provide the initial context value in the state machine definition, then use the `setContext` function within your effects to change the context:
+ *
+ * ```ts twoslash
+ * import useStateMachine from "@cassiozen/usestatemachine";
+ * // ---cut---
+ * const [state, send] = useStateMachine({
+ *   context: { toggleCount: 0 },
+ *   initial: "inactive",
+ *   states: {
+ *     inactive: {
+ *       on: { TOGGLE: "active" },
+ *     },
+ *     active: {
+ *       on: { TOGGLE: "inactive" },
+ *       effect({ setContext }) {
+ *         setContext((context) => ({ toggleCount: context.toggleCount + 1 }));
+ *       },
+ *     },
+ *   },
+ * });
+ *
+ * console.log(state); // { context: { toggleCount: 0 }, value: 'inactive', nextEvents: ['TOGGLE'] }
+ *
+ * send("TOGGLE");
+ *
+ * console.log(state); // { context: { toggleCount: 1 }, value: 'active', nextEvents: ['TOGGLE'] }
+ * ```
+ *
+ * @template D The type of the state machine definition.
+ * @param definition The state machine definition.
+ * @returns An array with the current state and the send function.
+ * @see https://usestatemachine.js.org/docs/api/
+ */
+export default useStateMachine as unknown as UseStateMachine;
 
-  return useState(definition, state, dispatch);
-}
-
-function useState(
-  definition: Machine.Definition.Impl,
-  state: Machine.State.Impl,
-  dispatch: React.Dispatch<InternalEvent>,
-) {
-  const send = useConstant(
-    () => (sendable: Machine.Sendable.Impl) =>
-      dispatch({ type: "SEND", sendable }),
-  );
-
-  const setContext = (updater: Machine.ContextUpdater.Impl) => {
-    dispatch({ type: "SET_CONTEXT", updater });
-    return { send };
-  };
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
-  useEffect(() => {
-    const entry = R.get(definition.states, state.value)!.effect;
-    const exit = entry?.({
-      send,
-      setContext,
-      event: state.event,
-      context: state.context,
-    });
-
-    return typeof exit === "function"
-      ? () =>
-          exit?.({
-            send,
-            setContext,
-            event: state.event,
-            context: state.context,
-          })
-      : undefined;
-  }, [state.value, state.event]);
-
-  return [state, send];
-}
-
-function createInitialState(
-  definition: Machine.Definition.Impl,
-): Machine.State.Impl {
-  const nextEvents = R.keys(
-    R.concat(
-      R.fromMaybe(R.get(definition.states, definition.initial)!.on),
-      R.fromMaybe(definition.on),
-    ),
-  );
-
-  return {
-    value: definition.initial,
-    context: definition.context as Machine.Context.Impl,
-    event: { type: "$$initial" } as Machine.Event.Impl,
-    nextEvents: nextEvents,
-    nextEventsT: nextEvents,
-  };
-}
-
-function createReducer(definition: Machine.Definition.Impl) {
-  const log = createLogger(definition);
-
-  return (
-    machineState: Machine.State.Impl,
-    internalEvent: InternalEvent,
-  ): Machine.State.Impl => {
-    if (internalEvent.type === "SET_CONTEXT") {
-      const nextContext = internalEvent.updater(machineState.context);
-
-      if (__DEV__) {
-        log(
-          "Context update",
-          ["Previous Context", machineState.context],
-          ["Next Context", nextContext],
-        );
-      }
-
-      return { ...machineState, context: nextContext };
-    }
-
-    if (internalEvent.type === "SEND") {
-      const sendable = internalEvent.sendable;
-      const event =
-        typeof sendable === "string" ? { type: sendable } : sendable;
-      const context = machineState.context;
-      const stateNode = R.get(definition.states, machineState.value)!;
-      const resolvedTransition =
-        R.get(R.fromMaybe(stateNode.on), event.type) ??
-        R.get(R.fromMaybe(definition.on), event.type);
-
-      if (!resolvedTransition) {
-        if (__DEV__) {
-          log(
-            `Current state doesn't listen to event type "${event.type}".`,
-            ["Current State", machineState],
-            ["Event", event],
-          );
-        }
-
-        return machineState;
-      }
-
-      const [nextStateValue, didGuardDeny = false] = (() => {
-        if (typeof resolvedTransition === "string") {
-          return [resolvedTransition];
-        }
-
-        if (resolvedTransition.guard === undefined) {
-          return [resolvedTransition.target];
-        }
-
-        if (resolvedTransition.guard({ context, event })) {
-          return [resolvedTransition.target];
-        }
-
-        return [resolvedTransition.target, true];
-      })() as [Machine.StateValue.Impl, true?];
-
-      if (didGuardDeny) {
-        if (__DEV__) {
-          log(
-            `Transition from "${machineState.value}" to "${nextStateValue}" denied by guard`,
-            ["Event", event],
-            ["Context", context],
-          );
-        }
-
-        return machineState;
-      }
-
-      if (__DEV__) {
-        log(`Transition from "${machineState.value}" to "${nextStateValue}"`, [
-          "Event",
-          event,
-        ]);
-      }
-
-      const resolvedStateNode = R.get(definition.states, nextStateValue)!;
-      const nextEvents = R.keys(
-        R.concat(R.fromMaybe(resolvedStateNode.on), R.fromMaybe(definition.on)),
-      );
-
-      return {
-        value: nextStateValue,
-        context,
-        event,
-        nextEvents,
-        nextEventsT: nextEvents,
-      };
-    }
-
-    return assertNever(internalEvent);
-  };
-}
-
-interface SetContextEvent {
-  type: "SET_CONTEXT";
-  updater: Machine.ContextUpdater.Impl;
-}
-
-interface SendEvent {
-  type: "SEND";
-  sendable: Machine.Sendable.Impl;
-}
-
-type InternalEvent = SetContextEvent | SendEvent;
-
-export type Console = {
-  log: (a: string, b: string | object) => void;
-  groupCollapsed?: (...l: string[]) => void;
-  groupEnd?: () => void;
-};
-
-function createLogger(definition: Machine.Definition.Impl) {
-  return function log(
-    groupLabel: string,
-    ...nested: [string, string | object][]
-  ): void {
-    if (!definition.verbose) {
-      return;
-    }
-
-    const console_ = definition.console || console;
-
-    if (__DEV__) {
-      console_.groupCollapsed?.(
-        "%cuseStateMachine",
-        "color: #888; font-weight: lighter;",
-        groupLabel,
-      );
-
-      for (const message of nested) {
-        console_.log(message[0], message[1]);
-      }
-
-      console_.groupEnd?.();
-    }
-  };
-}
-
-export const useStateMachine = $useStateMachine as unknown as UseStateMachine;
-export const createStateMachine =
-  $createStateMachine as unknown as CreateStateMachine;
-export const useExternalStateMachine =
-  $useExternalStateMachine as unknown as UseExternalStateMachine;
-
-export const t = <T>() => ({ [$$t]: undefined as T });
+export { t } from "./utils";
