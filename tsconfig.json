@@ -5,6 +5,7 @@
   ],
   "include": [
     "@types/**/*",
+    "scripts/**/*",
     "src/**/*",
     "test/**/*",
   ],

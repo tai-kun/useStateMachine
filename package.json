@@ -3,25 +3,34 @@
   "version": "1.0.1",
   "license": "MIT",
   "author": "Cassio Zen",
-  "main": "dist/index.js",
-  "module": "dist/usestatemachine.esm.js",
-  "types": "dist/index.d.ts",
   "sideEffects": false,
   "files": [
     "dist",
     "src"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./external": {
+      "types": "./dist/external.d.ts",
+      "import": "./dist/external.mjs",
+      "require": "./dist/external.cjs"
+    }
+  },
   "engines": {
     "node": "^18 || >=20"
   },
   "scripts": {
     "analyze": "size-limit --why",
-    "build": "dts build",
-    "lint": "biome lint ./examples ./src ./test",
+    "build": "node scripts/build.mjs",
+    "postbuild": "tsc -p tsconfig.build.json",
+    "lint": "biome lint ./examples ./scripts ./src ./test",
     "size": "size-limit",
-    "start": "dts watch",
     "test": "dts test",
-    "format": "biome format --write ./examples ./src ./test",
+    "format": "biome format --write ./examples ./scripts ./src ./test",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
@@ -38,6 +47,7 @@
     "@types/react-dom": "^18.2.19",
     "@typescript/twoslash": "^2.1.0",
     "dts-cli": "^2.0.4",
+    "esbuild": "^0.20.1",
     "global-jsdom": "^24.0.0",
     "husky": "^9.0.11",
     "react": "^18.0.0",
@@ -47,7 +57,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "biome lint ./examples ./src ./test"
+      "pre-commit": "biome lint ./examples ./scripts ./src ./test"
     }
   },
   "jest": {
@@ -55,7 +65,7 @@
   },
   "size-limit": [
     {
-      "path": "dist/usestatemachine.cjs.production.min.js",
+      "path": "dist/index.min.mjs",
       "limit": "1 kB",
       "brotli": true
     }
