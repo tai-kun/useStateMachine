@@ -203,7 +203,7 @@ const config = [
 
     // Plugins
 
-    plugins: [replace()],
+    plugins: [],
   },
 ];
 
