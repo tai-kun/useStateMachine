@@ -1,17 +1,63 @@
-import { act, renderHook } from "@testing-library/react";
 import "global-jsdom/register";
-import { useMemo } from "react";
-import useStateMachine, { t } from "../src";
-import useExternalStateMachine, { createStateMachine } from "../src/external";
+
+import { act, renderHook } from "@testing-library/react";
+import { useMemo, useSyncExternalStore } from "react";
+import useStateMachine, {
+  t,
+  useSyncedStateMachine,
+  useExternalStateMachine,
+  createStateMachine,
+  type UseStateMachine,
+} from "../src";
 
 // @ts-expect-error
 global.__DEV__ = true;
 
-describe.each<typeof useStateMachine>([
-  useStateMachine,
-  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
-  (d: any) => useExternalStateMachine(useMemo(() => createStateMachine(d), [])),
-])("", (useHook) => {
+function useStateMachineImplementedByUseExternalStateMachine(def: any) {
+  const machine = useMemo(() => createStateMachine(def), []);
+  return useExternalStateMachine(machine);
+}
+
+function useStateMachineImplementedByUseSyncedStateMachine(def: any) {
+  const [getState, send] = useSyncedStateMachine(def);
+  const { subscribe, sendAndNotify } = useMemo(() => {
+    const callbacks = new Set<any>();
+
+    return {
+      subscribe(callback: any) {
+        callbacks.add(callback);
+
+        return () => {
+          callbacks.delete(callback);
+        };
+      },
+      sendAndNotify(sendable: never) {
+        send(sendable);
+
+        for (const callback of callbacks) {
+          callback();
+        }
+      },
+    };
+  }, []);
+  const state = useSyncExternalStore(subscribe, getState, getState);
+
+  return [state, sendAndNotify];
+}
+
+describe.each(
+  [
+    useStateMachine,
+    useStateMachineImplementedByUseExternalStateMachine as UseStateMachine,
+    useStateMachineImplementedByUseSyncedStateMachine as UseStateMachine,
+  ].map((useHook) =>
+    Object.assign(useHook, {
+      toString() {
+        return useHook.name || "<anonymous>";
+      },
+    }),
+  ),
+)("%s", (useHook) => {
   describe("States & Transitions", () => {
     it("should set initial state", () => {
       const { result } = renderHook(() =>
