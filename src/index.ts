@@ -13,4 +13,4 @@ export {
   default as useStateMachine,
   type UseStateMachine,
 } from "./useStateMachine";
-export { t } from "./util";
+export { t } from "./core/util";

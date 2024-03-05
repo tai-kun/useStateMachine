@@ -1,19 +1,181 @@
-import type { $$t } from "../util"
-import type { ConsoleInterface, R, ReducerAction } from "./extra"
+/* -----------------------------------------------------------------------------
+ *
+ * See https://github.com/cassiozen/useStateMachine/blob/main/src/
+ *
+ * -------------------------------------------------------------------------- */
+
+import type { $$t } from "./util"
+
+/* -----------------------------------------------------------------------------
+ *
+ * @tai-kun/use-state-machine
+ *
+ * -------------------------------------------------------------------------- */
 
 /**
  * State machine.
  *
  * @template D The type of the state machine definition.
  */
-export type Machine<D = Machine.Definition.Impl> = [
-  getState: () => Machine.State.Impl,
-  dispatch: (action: ReducerAction) => void,
-  subscribe: (callback: () => void) => () => void,
-  definition: D,
-]
+export type Machine<D = Machine.Definition.Impl> = {
+  def: D
+  send: Machine.Send<Machine.Definition.FromTypeParamter<D>>
+  getState: () => Machine.State<Machine.Definition.FromTypeParamter<D>>
+  subscribe: (callback: (state: Machine.State<Machine.Definition.FromTypeParamter<D>>) => void) => () => void
+  setContext: Machine.SetContext<Machine.Definition.FromTypeParamter<D>>
+}
+
+export type MachineImpl = {
+  def: Machine.Definition.Impl
+  send: Machine.Send.Impl
+  getState: () => Machine.State.Impl
+  subscribe: (callback: (state: Machine.State.Impl) => void) => () => void
+  setContext: Machine.SetContext.Impl
+}
 
 type $$t = typeof $$t;
+
+/**
+ * Interface for a console object.
+ */
+export type ConsoleInterface = {
+  /**
+   * Logs a message to the console.
+   *
+   * @param format A `printf`-like format string.
+   * @param param The parameter to log.
+   */
+  readonly log: (format: string, param: string | object) => void;
+  /**
+   * Increases indentation of subsequent lines by spaces for `groupIndentation`length.
+   *
+   * @param label If one or more `label`s are provided, those are printed first without the additional indentation.
+   */
+  readonly group?: ((...label: string[]) => void) | undefined;
+  /**
+   * An alias for {@link group}.
+   */
+  readonly groupCollapsed?: ((...label: string[]) => void) | undefined;
+  /**
+   * Decreases indentation of subsequent lines by spaces for `groupIndentation`length.
+   */
+  readonly groupEnd?: (() => void) | undefined;
+};
+
+/* -----------------------------------------------------------------------------
+ *
+ * See https://github.com/cassiozen/useStateMachine/blob/main/src/extra.ts
+ *
+ * -------------------------------------------------------------------------- */
+
+export namespace R {
+  /**
+   * Get the value of a key in an object.
+   *
+   * @template O The object type.
+   * @param o The object from which to retrieve the value.
+   * @param k The key whose value is to be retrieved.
+   * @returns The value of the key, or `undefined` if the key does not exist.
+   */
+  export function get<O extends R.Unknown>(
+    o: O,
+    k: R.Key<O>,
+  ): R.Value<O> | undefined {
+    return (o as any)[k];
+  }
+
+  /**
+   * Concatenates two objects.
+   *
+   * @template O1 The first object type.
+   * @template O2 The second object type.
+   * @param o1 The first object to concatenate.
+   * @param o2 The second object to concatenate.
+   * @returns The concatenated object resulting from merging the properties of o1 and o2.
+   */
+  export function concat<O1 extends R.Unknown, O2 extends R.Unknown>(
+    o1: O1,
+    o2: O2,
+  ): R.Concat<O1, O2> {
+    return {
+      ...o1,
+      ...o2,
+    };
+  }
+
+  /**
+   * Returns the value of an object, or an empty object type as `O` if the object is `undefined`.
+   *
+   * @template O The object type.
+   * @param o The object to return, or `undefined`.
+   * @returns
+   */
+  export function fromMaybe<O extends R.Unknown>(o: O | undefined): O {
+    return o ?? ({} as O);
+  }
+
+  /**
+   * Returns the keys of an object.
+   *
+   * @template O The object type.
+   * @param o The object from which to retrieve the keys.
+   * @returns An array of the keys of the object.
+   */
+  export function keys<O extends R.Unknown>(o: O): R.Key<O>[] {
+    return Object.keys(o);
+  }
+
+  declare const _$$K: unique symbol;
+  declare const _$$V: unique symbol;
+
+  /**
+   * A type that represents the key of a key-value pair.
+   */
+  export type $$K = typeof _$$K;
+
+  /**
+   * A type that represents the value of a key-value pair.
+   */
+  export type $$V = typeof _$$V;
+
+  /**
+   * A type that represents a key-value pair.
+   *
+   * @template K The key type.
+   * @template V The value type.
+   */
+  export type Of<K extends string, V> = { [_$$K]: K; [_$$V]: V };
+
+  /**
+   * A type that represents a key-value pair with unknown key.
+   */
+  export type Unknown = Of<string, unknown>;
+
+  /**
+   * Extracts the key type from a key-value pair.
+   *
+   * @template O The key-value pair type.
+   */
+  export type Key<O extends R.Unknown> = O[$$K];
+
+  /**
+   * Extracts the value type from a key-value pair.
+   *
+   * @template O The key-value pair type.
+   */
+  export type Value<O extends R.Unknown> = O[$$V];
+
+  /**
+   * Concatenates two key-value pairs.
+   *
+   * @template O1 The first key-value pair type.
+   * @template O2 The second key-value pair type.
+   */
+  export type Concat<O1 extends R.Unknown, O2 extends R.Unknown> = R.Of<
+    R.Key<O1> | R.Key<O2>,
+    R.Value<O1> | R.Value<O2>
+  >;
+}
 
 /* -----------------------------------------------------------------------------
  *
@@ -165,9 +327,10 @@ export namespace Machine {
       )
     
     type EffectImpl =
-      (parameter: EffectParameter.Impl) =>
-          | void
-          | ((parameter: EffectParameter.Cleanup.Impl) => void)
+      (parameter: EffectParameter.Impl) => (
+        | void
+        | ((parameter: EffectParameter.Cleanup.Impl) => void)
+      )
     export namespace Effect {
       export type Impl = EffectImpl;  
     }

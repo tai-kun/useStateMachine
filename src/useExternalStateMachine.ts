@@ -1,66 +1,70 @@
-import { useEffect, useRef, useSyncExternalStore } from "react";
-import {
-  type ReducerAction,
-  createInitialState,
-  createReducer,
-  useConstant,
-  useMachine,
-} from "./core/extra";
-import type { A, Machine } from "./core/types";
+import createInitialState from "./core/createInitialState";
+import processDispatch, { type Action } from "./core/processDispatch";
+import { useEffect, useRef, useSyncExternalStore } from "./core/react";
+import type { A, Machine, MachineImpl } from "./core/src";
+import useSingleton from "./core/useSingleton";
+import useSync, { type Dispatchers } from "./core/useSync";
 
-export type CreateStateMachine = <const D extends Machine.Definition<D>>(
+type CreateStateMachine = <const D extends Machine.Definition<D>>(
   definition: A.InferNarrowestObject<D>,
 ) => Machine<D>;
 
-export type UseExternalStateMachine = <const D extends Machine.Definition<D>>(
-  machine: Machine<D>,
-) => [
-  state: Machine.State<Machine.Definition.FromTypeParamter<D>>,
-  send: Machine.Send<Machine.Definition.FromTypeParamter<D>>,
-];
+export type UseExternalStateMachine = <
+  const M extends {
+    readonly getState: any;
+    readonly send: any;
+  },
+>(
+  machine: M,
+) => [state: ReturnType<M["getState"]>, send: M["send"]];
 
-function $createStateMachine(definition: Machine.Definition.Impl): Machine {
-  let state = createInitialState(definition);
-  const update = createReducer(definition);
+function create(def: Machine.Definition.Impl): MachineImpl {
+  let state = createInitialState(def);
   const callbacks = new Set<(state: Machine.State.Impl) => void>();
 
-  return [
-    () => state,
-    function dispatch(action: ReducerAction) {
-      state = update(state, action);
+  function dispatch(action: Action) {
+    const nextState = processDispatch(def, state, action);
+
+    if (!Object.is(nextState, state)) {
+      state = nextState;
 
       for (const callback of callbacks) {
         callback(state);
       }
-    },
-    (callback: (state: Machine.State.Impl) => void) => {
+    }
+  }
+
+  function send(sendable: Machine.Sendable.Impl) {
+    dispatch({
+      type: "SEND",
+      payload: sendable,
+    });
+  }
+
+  return {
+    def,
+    send,
+    getState: () => state,
+    subscribe(callback: (state: Machine.State.Impl) => void) {
       callbacks.add(callback);
 
       return () => {
         callbacks.delete(callback);
       };
     },
-    definition,
-  ];
+    setContext(updater: Machine.ContextUpdater.Impl) {
+      dispatch({
+        type: "SET_CONTEXT",
+        payload: updater,
+      });
+
+      return { send };
+    },
+  };
 }
 
-function useExternalStateMachine(machine: Machine) {
+function useExternalStateMachine(machine: MachineImpl) {
   const isMounted = useRef(false);
-  const [getState, dispatch, subscribe, definition] = useConstant(() => {
-    const [, dispatch] = machine;
-
-    return [
-      machine[0],
-      function dispatchOnlyWhenMounted(action: ReducerAction) {
-        if (isMounted.current) {
-          dispatch(action);
-        }
-      },
-      machine[2],
-      machine[3],
-    ];
-  });
-  const state = useSyncExternalStore(subscribe, getState, getState);
 
   useEffect(() => {
     isMounted.current = true;
@@ -70,26 +74,36 @@ function useExternalStateMachine(machine: Machine) {
     };
   }, []);
 
-  return useMachine(definition, state, dispatch);
+  const state = useSyncExternalStore(
+    machine.subscribe,
+    machine.getState,
+    machine.getState,
+  );
+  const dispatchers = useSingleton<Dispatchers>(() => {
+    function send(sendable: Machine.Sendable.Impl) {
+      if (isMounted.current) {
+        machine.send(sendable);
+      }
+    }
+
+    return {
+      send,
+      setContext(updater) {
+        if (isMounted.current) {
+          machine.setContext(updater);
+        }
+
+        return { send };
+      },
+    };
+  });
+
+  useSync(machine.def, state, dispatchers);
+
+  return [state, dispatchers.send];
 }
 
-/**
- * Hook to use a state machine.
- *
- * Similar to `useStateMachine`, but uses `React.useSyncExternalStore` instead of `React.useReducer` to manage state.
- *
- * ```ts
- * const machine = createStateMachine(
- *   // State Machine Definition
- * );
- * const [state, send] = useExternalStateMachine(machine);
- * ```
- *
- * @template D The type of the state machine definition.
- * @param machine A state machine object.
- * @returns An array with the current state and the send function.
- */
-export default useExternalStateMachine as unknown as UseExternalStateMachine;
+export { type CreateStateMachine };
 
 /**
  * Creates a state machine object.
@@ -104,6 +118,24 @@ export default useExternalStateMachine as unknown as UseExternalStateMachine;
  * @param definition The state machine definition.
  * @returns A state machine object.
  */
-export const createStateMachine = $createStateMachine as CreateStateMachine;
+export const createStateMachine = create as unknown as CreateStateMachine;
 
-export { t } from "./util";
+/**
+ * Hook to use a state machine.
+ *
+ * Similar to `useStateMachine`, but uses `React.useSyncExternalStore` instead of `React.useState` to manage state.
+ *
+ * ```ts
+ * const machine = createStateMachine(
+ *   // State Machine Definition
+ * );
+ * const [state, send] = useExternalStateMachine(machine);
+ * ```
+ *
+ * @template D The type of the state machine definition.
+ * @param machine A state machine object.
+ * @returns An array with the current state and the send function.
+ */
+export default useExternalStateMachine as unknown as UseExternalStateMachine;
+
+export { t } from "./core/util";

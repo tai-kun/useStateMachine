@@ -1,20 +1,50 @@
-import { useReducer } from "react";
-import { createInitialState, createReducer, useMachine } from "./core/extra";
-import type { A, Machine } from "./core/types";
+import createInitialState from "./core/createInitialState";
+import processDispatch, { type Action } from "./core/processDispatch";
+import { useState } from "./core/react";
+import type { A, Machine } from "./core/src";
+import useSingleton from "./core/useSingleton";
+import useSync, { type Dispatchers } from "./core/useSync";
 
-export type UseStateMachine = <const D extends Machine.Definition<D>>(
+type UseStateMachine = <const D extends Machine.Definition<D>>(
   definition: A.InferNarrowestObject<D>,
 ) => [
   state: Machine.State<Machine.Definition.FromTypeParamter<D>>,
   send: Machine.Send<Machine.Definition.FromTypeParamter<D>>,
 ];
 
-function useStateMachine(definition: Machine.Definition.Impl) {
-  return useMachine(
-    definition,
-    ...useReducer(createReducer(definition), createInitialState(definition)),
-  );
+function useStateMachine(def: Machine.Definition.Impl) {
+  const [state, setState] = useState(() => createInitialState(def));
+  const dispatchers = useSingleton<Dispatchers>(() => {
+    function dispatch(action: Action) {
+      setState((currentState) => processDispatch(def, currentState, action));
+    }
+
+    function send(sendable: Machine.Sendable.Impl) {
+      dispatch({
+        type: "SEND",
+        payload: sendable,
+      });
+    }
+
+    return {
+      send,
+      setContext(updater) {
+        dispatch({
+          type: "SET_CONTEXT",
+          payload: updater,
+        });
+
+        return { send };
+      },
+    };
+  });
+
+  useSync(def, state, dispatchers);
+
+  return [state, dispatchers.send];
 }
+
+export { type UseStateMachine };
 
 /**
  * # API
@@ -214,4 +244,4 @@ function useStateMachine(definition: Machine.Definition.Impl) {
  */
 export default useStateMachine as unknown as UseStateMachine;
 
-export { t } from "./util";
+export { t } from "./core/util";
