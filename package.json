@@ -40,6 +40,7 @@
     "lint": "biome lint ./examples ./scripts ./src ./test",
     "size": "size-limit",
     "test": "dts test",
+    "check": "biome check --apply ./examples ./scripts ./src ./test",
     "format": "biome format --write ./examples ./scripts ./src ./test",
     "typecheck": "tsc --noEmit"
   },
