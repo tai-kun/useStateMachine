@@ -4,6 +4,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { build } from "esbuild";
 
+const CJS_TARGET = "ES2015";
+
 /** @returns {import("esbuild").Plugin} */
 function replace() {
   return {
@@ -112,6 +114,42 @@ function resolve(fmt) {
   };
 }
 
+/**
+ * @param {"esm" | "cjs"} format
+ * @param {string} name
+ * @returns {import("esbuild").BuildOptions}
+ */
+function toBundleOptions(format, name) {
+  return {
+    // General
+
+    bundle: true,
+    platform: "node",
+
+    // Input
+
+    entryPoints: [`src/${name}.ts`],
+
+    // Output contents
+
+    format,
+    ...(format === "cjs" ? { target: CJS_TARGET } : {}),
+
+    // Output location
+
+    write: true,
+    outfile: `.cache/dist/${name.toLowerCase()}.${format}.production.min.js`,
+
+    // Optimization
+
+    define: {
+      __DEV__: "false",
+    },
+    minify: true,
+    packages: "external",
+  };
+}
+
 /** @type {import("esbuild").BuildOptions[]} */
 const config = [
   // ESM
@@ -129,6 +167,7 @@ const config = [
 
     format: "esm",
     lineLimit: 80,
+    sourcemap: "linked",
 
     // Output location
 
@@ -157,8 +196,9 @@ const config = [
     // Output contents
 
     format: "cjs",
-    target: "es6",
+    target: CJS_TARGET,
     lineLimit: 80,
+    sourcemap: "linked",
 
     // Output location
 
@@ -174,37 +214,15 @@ const config = [
     plugins: [replace(), resolve("cjs")],
   },
   // Bundled
-  {
-    // General
-
-    bundle: true,
-    platform: "node",
-
-    // Input
-
-    entryPoints: ["src/useStateMachine.ts"],
-
-    // Output contents
-
-    format: "esm",
-
-    // Output location
-
-    write: true,
-    outfile: "dist/usestatemachine.esm.production.min.js",
-
-    // Optimization
-
-    define: {
-      __DEV__: "false",
-    },
-    minify: true,
-    packages: "external",
-
-    // Plugins
-
-    plugins: [],
-  },
+  ...[
+    "index",
+    "useStateMachine",
+    "useExternalStateMachine",
+    "useSyncedStateMachine",
+  ].flatMap((name) => [
+    toBundleOptions("esm", name),
+    toBundleOptions("cjs", name),
+  ]),
 ];
 
 await Promise.all(config.map((c) => build(c)));

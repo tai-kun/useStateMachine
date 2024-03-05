@@ -10,21 +10,10 @@
     "test/**/*",
   ],
   "compilerOptions": {
-    "module": "esnext",
-    "lib": ["dom", "esnext"],
-    "importHelpers": true,
-    "declaration": true,
-    "sourceMap": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "moduleResolution": "node",
-    "jsx": "react",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "lib": ["DOM", "ESNext"],
+    "jsx": "react-jsxdev",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "noEmit": true
   }
 }
