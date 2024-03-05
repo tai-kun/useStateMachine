@@ -644,6 +644,7 @@ export namespace A {
   export type InferNarrowest<T> =
     T extends any
       ? ( T extends A.Function ? T :
+          T extends { [$$t]: unknown } ? T :
           T extends A.Object ? InferNarrowestObject<T> :
           T
         )
