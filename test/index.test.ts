@@ -14,12 +14,14 @@ import useStateMachine, {
 global.__DEV__ = true;
 
 function useStateMachineImplementedByUseExternalStateMachine(def: any) {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
   const machine = useMemo(() => createStateMachine(def), []);
   return useExternalStateMachine(machine);
 }
 
 function useStateMachineImplementedByUseSyncedStateMachine(def: any) {
   const [getState, send] = useSyncedStateMachine(def);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
   const { subscribe, sendAndNotify } = useMemo(() => {
     const callbacks = new Set<any>();
 
