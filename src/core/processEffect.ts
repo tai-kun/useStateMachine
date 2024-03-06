@@ -1,7 +1,7 @@
 import { type Machine, R } from "./src";
 
 export type Dispatchers = Pick<
-  Machine.EffectParameter.Impl,
+  Machine.Definition.Effect.Parameter.Impl,
   "send" | "setContext"
 >;
 
@@ -10,7 +10,7 @@ export default function processEffect(
   state: Machine.State.Impl,
   dispatchers: Dispatchers,
 ) {
-  const effectParams: Machine.EffectParameter.Impl = {
+  const effectParams: Machine.Definition.Effect.Parameter.Impl = {
     ...dispatchers,
     event: state.event,
     context: state.context,

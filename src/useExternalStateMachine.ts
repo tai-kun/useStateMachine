@@ -1,13 +1,13 @@
 import createInitialState from "./core/createInitialState";
 import processDispatch, { type Action } from "./core/processDispatch";
 import { useEffect, useRef, useSyncExternalStore } from "./core/react";
-import type { A, Machine, MachineImpl } from "./core/src";
+import type { A, Machine } from "./core/src";
 import useSingleton from "./core/useSingleton";
 import useSync, { type Dispatchers } from "./core/useSync";
 
 type CreateStateMachine = <const D extends Machine.Definition<D>>(
   definition: A.InferNarrowestObject<D>,
-) => Machine<D>;
+) => Machine.External<D>;
 
 export type UseExternalStateMachine = <
   const M extends {
@@ -18,7 +18,7 @@ export type UseExternalStateMachine = <
   machine: M,
 ) => [state: ReturnType<M["getState"]>, send: M["send"]];
 
-function create(def: Machine.Definition.Impl): MachineImpl {
+function create(def: Machine.Definition.Impl): Machine.External.Impl {
   let state = createInitialState(def);
   const callbacks = new Set<(state: Machine.State.Impl) => void>();
 
@@ -63,7 +63,7 @@ function create(def: Machine.Definition.Impl): MachineImpl {
   };
 }
 
-function useExternalStateMachine(machine: MachineImpl) {
+function useExternalStateMachine(machine: Machine.External.Impl) {
   const isMounted = useRef(false);
 
   useEffect(() => {
