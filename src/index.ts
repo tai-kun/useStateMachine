@@ -8,7 +8,7 @@ export {
   type UseSyncedStateMachine,
 } from "./useSyncedStateMachine";
 export {
-  // /** @deprecated Use `import { useStateMachine } from "@tai-kun/use-state-machine"` instead. */
+  /** @deprecated Use `import { useStateMachine } from "@tai-kun/use-state-machine"` instead. */
   default,
   default as useStateMachine,
   type UseStateMachine,

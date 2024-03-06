@@ -2,12 +2,13 @@ import "global-jsdom/register";
 
 import { act, renderHook } from "@testing-library/react";
 import { useMemo, useSyncExternalStore } from "react";
-import useStateMachine, {
-  t,
-  useSyncedStateMachine,
-  useExternalStateMachine,
-  createStateMachine,
+import {
   type UseStateMachine,
+  createStateMachine,
+  t,
+  useExternalStateMachine,
+  useStateMachine,
+  useSyncedStateMachine,
 } from "../src";
 
 // @ts-expect-error
