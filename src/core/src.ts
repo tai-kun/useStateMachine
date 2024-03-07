@@ -91,7 +91,7 @@ export namespace Machine {
   /**
    * @internal
    */
-  export type Type = (...args: unknown[]) => {
+  export type Type = (...args: any) => {
     def: unknown
     [$$mt]: {
       state: unknown
