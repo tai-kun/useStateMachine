@@ -1,6 +1,31 @@
 import { type Machine, R } from "./src";
 
 /**
+ * Creates a initial state-machine state.
+ *
+ * @param def State-machine definition.
+ * @returns initial state-machine state.
+ */
+export function createInitialState(
+  def: Machine.Definition.Impl,
+): Machine.State.Impl {
+  const nextEvents = R.keys(
+    R.concat(
+      R.fromMaybe(R.get(def.states, def.initial)!.on),
+      R.fromMaybe(def.on),
+    ),
+  );
+
+  return {
+    event: { type: "$$initial" } as Machine.Event.Impl,
+    value: def.initial,
+    context: def.context as Machine.Context.Impl,
+    nextEvents: nextEvents,
+    nextEventsT: nextEvents,
+  };
+}
+
+/**
  * Basic action type.
  *
  * @template T Action type.
@@ -26,7 +51,7 @@ export type Action =
  * @param action Action to dispatch.
  * @returns New state.
  */
-export default function processDispatch(
+export function processDispatch(
   def: Machine.Definition.Impl,
   state: Machine.State.Impl,
   action: Action,
@@ -146,4 +171,25 @@ export default function processDispatch(
     default:
       throw new Error(`Unknown action type: ${(action as any).type}`);
   }
+}
+
+export type Dispatchers = Pick<
+  Machine.Definition.Effect.Parameter.Impl,
+  "send" | "setContext"
+>;
+
+export function processEffect(
+  def: Machine.Definition.Impl,
+  state: Machine.State.Impl,
+  dispatchers: Dispatchers,
+) {
+  const effectParams: Machine.Definition.Effect.Parameter.Impl = {
+    ...dispatchers,
+    event: state.event,
+    context: state.context,
+  };
+  const { effect: enty } = R.get(def.states, state.value) || {};
+  const exit = enty?.(effectParams);
+
+  return typeof exit !== "function" ? undefined : () => exit(effectParams);
 }

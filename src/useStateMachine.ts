@@ -1,11 +1,10 @@
-import createInitialState from "./core/createInitialState";
 import {
   type Dispatchers,
   useDefinition,
   useSingleton,
   useSync,
 } from "./core/hooks";
-import processDispatch, { type Action } from "./core/processDispatch";
+import { type Action, createInitialState, processDispatch } from "./core/logic";
 import { useState } from "./core/react";
 import type { $$t, A, Machine } from "./core/src";
 

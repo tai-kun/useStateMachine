@@ -1,5 +1,4 @@
-import createInitialState from "./core/createInitialState";
-import processDispatch, { type Action } from "./core/processDispatch";
+import { type Action, createInitialState, processDispatch } from "./core/logic";
 import type { A, Machine } from "./core/src";
 
 type CreateExternalStateMachine = {

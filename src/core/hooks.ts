@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import processEffect, { type Dispatchers } from "./processEffect";
+import { type Dispatchers, processEffect } from "./logic";
 import { useEffect } from "./react";
 import type { Machine } from "./src";
 

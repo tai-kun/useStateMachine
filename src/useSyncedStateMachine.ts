@@ -1,7 +1,10 @@
-import createInitialState from "./core/createInitialState";
 import { useDefinition, useSingleton } from "./core/hooks";
-import processDispatch, { type Action } from "./core/processDispatch";
-import processEffect from "./core/processEffect";
+import {
+  type Action,
+  createInitialState,
+  processDispatch,
+  processEffect,
+} from "./core/logic";
 import { useEffect, useRef } from "./core/react";
 import type { $$t, A, Machine } from "./core/src";
 
