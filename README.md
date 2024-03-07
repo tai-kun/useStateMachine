@@ -4,10 +4,14 @@
 
 **The <1 KiB _state machine_ hook for React:**
 
-[![Canary Release on NPM](https://github.com/tai-kun/useStateMachine/actions/workflows/canary-release.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/canary-release.yaml)
-[![Release on NPM](https://github.com/tai-kun/useStateMachine/actions/workflows/release.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/release.yaml)
 [![Test](https://github.com/tai-kun/useStateMachine/actions/workflows/test.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/test.yaml)
-[![npm package](https://badge.fury.io/js/@tai-kun%2Fuse-state-machine.svg)](https://badge.fury.io/js/@tai-kun%2Fuse-state-machine)
+[![Release on NPM](https://github.com/tai-kun/useStateMachine/actions/workflows/release.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/release.yaml)
+[![Canary Release on NPM](https://github.com/tai-kun/useStateMachine/actions/workflows/canary-release.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/canary-release.yaml)
+
+[![npm version](https://img.shields.io/npm/v/@tai-kun/use-state-machine)](https://www.npmjs.com/package/@tai-kun/use-state-machine)
+![npm canary version](https://img.shields.io/npm/v/@tai-kun/use-state-machine/canary)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
 
 See the user-facing docs at: [usestatemachine.js.org](https://usestatemachine.js.org/)
 
