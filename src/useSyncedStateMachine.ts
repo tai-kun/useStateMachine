@@ -40,51 +40,42 @@ type UseSyncedStateMachine = {
     send: Machine.Send<Machine.Definition.FromTypeParamter<D>>,
   ];
   /**
-   * This hook uses pre-defined state machine definitions.
+   * This hook uses pre-defined state machine.
+   *
+   * The machine function is executed only once.
+   * If you use dynamically changing arguments, you need to mark them as transferable values.
+   * If there are arguments marked as transferable (by `Transfer`), they must be transferred with the `transfer` function.
    *
    * ```ts
-   * const machine = defineStateMachine((create) =>
-   *   create({
+   * function machine(staticParam: string, onChange: Transfer<Function>) {
+   *   return createStateMachine({
    *     // State Machine Definition
-   *   })
-   * );
-   *
-   * function App() {
-   *   const [machineState, send] = useSyncedStateMachine(machine);
-   *
-   *   // ...
-   * }
-   * ```
-   *
-   * or
-   *
-   * ```ts
-   * type Props = {
-   *   onChange(active: boolean): void
-   * };
-   *
-   * const machine = defineStateMachine<Props>()((props, create) =>
-   *   create({
+   *     // context: staticParam,
    *     initial: "inactive",
    *     states: {
    *       inactive: {
    *         on: { TOGGLE: "active" },
    *         effect() {
-   *           props.current.onChange(false);
+   *           onChange.current(false);
    *         },
    *       },
    *       active: {
    *         on: { TOGGLE: "inactive" },
    *         effect() {
-   *           props.current.onChange(true);
+   *           onChange.current(true);
    *         },
    *       },
    *     },
-   *   }),
-   * );
+   *   });
+   * }
    *
-   * function App(props: Props) {
-   *   const [machineState, send] = useSyncedStateMachine(machine, props);
+   * function App(props) {
+   *   const someStaticParam = "";
+   *   const [getState, send] = useSyncedStateMachine(
+   *     machine,
+   *     someStaticParam,
+   *     transfer(props.onChange)
+   *   );
    *
    *   // ...
    * }
