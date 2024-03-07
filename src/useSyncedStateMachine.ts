@@ -99,8 +99,8 @@ type UseSyncedStateMachine = {
    */
   <const M extends Machine.Type>(
     machine: M,
-    ...args: M[$$t]["args"]
-  ): [getState: () => M[$$t]["state"], send: M[$$t]["send"]];
+    ...args: M[typeof $$t]["args"]
+  ): [getState: () => M[typeof $$t]["state"], send: M[typeof $$t]["send"]];
 };
 
 type SetStateAction = (state: Machine.State.Impl) => Machine.State.Impl;
@@ -230,4 +230,4 @@ export {
   type DefineStateMachine,
 } from "./defineStateMachine";
 
-export { t } from "./core/util";
+export { type t } from "./core/util";

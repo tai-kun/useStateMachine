@@ -273,8 +273,8 @@ type UseStateMachine = {
    */
   <const M extends Machine.Type>(
     machine: M,
-    ...args: M[$$t]["args"]
-  ): [state: M[$$t]["state"], send: M[$$t]["send"]];
+    ...args: M[typeof $$t]["args"]
+  ): [state: M[typeof $$t]["state"], send: M[typeof $$t]["send"]];
 };
 
 function $useStateMachine(
@@ -325,4 +325,4 @@ export {
   type DefineStateMachine,
 } from "./defineStateMachine";
 
-export { t } from "./core/util";
+export { type t } from "./core/util";

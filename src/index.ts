@@ -24,4 +24,4 @@ export {
   useStateMachine,
   type UseStateMachine,
 } from "./useStateMachine";
-export { t } from "./core/util";
+export { type t } from "./core/util";

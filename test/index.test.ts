@@ -333,7 +333,7 @@ describe.each(
         useHook({
           schema: {
             events: {
-              ACTIVATE: t<{ number: number }>(),
+              ACTIVATE: {} as t<{ number: number }>,
             },
           },
           context: undefined,

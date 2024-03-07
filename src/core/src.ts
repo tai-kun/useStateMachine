@@ -4,9 +4,10 @@
  *
  * -------------------------------------------------------------------------- */
 
-import type { $$t } from "./util"
-
-export type $$t = typeof $$t;
+/**
+ * Identifier for context or event types.
+ */
+export declare const $$t: unique symbol;
 
 /* -----------------------------------------------------------------------------
  *
@@ -160,7 +161,7 @@ export namespace Machine {
   export type Definition<
     Self,
     States = A.Get<Self, "states">,
-    ContextSchema = A.Get<Self, ["schema", "context", $$t]>,
+    ContextSchema = A.Get<Self, ["schema", "context", typeof $$t]>,
     HasContextSchema = Self extends { schema: { context: unknown } } ? true : false
   > =
     & { initial:
@@ -592,7 +593,7 @@ export namespace Machine {
       context?:
         A.DoesExtend<ContextSchema, { [$$t]: unknown }> extends false ? (
           A.CustomError<
-            "Error: Use `t` to define type, eg `t<{ foo: number }>()`",
+            "Error: Use `t` to define type, eg `{} as t<{ foo: number }>`",
             ContextSchema>
         ) : (
           ContextSchema
@@ -605,7 +606,7 @@ export namespace Machine {
           //   throw an error
           // } else if (the event type is not a string) {
           //   throw an error
-          // } else if (the event is defineded by `t()` function) {
+          // } else if (the event is defineded by `t<>` type) {
           //   if (the wrapped payload is not an object containing a `$$t` property) {
           //     throw an error
           //   } else if (the payload is not a plain object) {
@@ -631,12 +632,12 @@ export namespace Machine {
           ) : A.Get<EventsSchema, Type> extends infer PayloadWrapped ? (
             A.DoesExtend<PayloadWrapped, { [$$t]: unknown }> extends false ? (
               A.CustomError<
-                "Error: Use `t` to define payload type, eg `t<{ foo: number }>()`",
+                "Error: Use `t` to define payload type, eg `{} as t<{ foo: number }>`",
                 A.Get<EventsSchema, Type>>
-            ) : A.Get<PayloadWrapped, $$t> extends infer Payload ? (
+            ) : A.Get<PayloadWrapped, typeof $$t> extends infer Payload ? (
               A.IsPlainObject<Payload> extends false ? (
                 A.CustomError<
-                  "Error: An event payload should be an object, eg `t<{ foo: number }>()`",
+                  "Error: An event payload should be an object, eg `{} as t<{ foo: number }>`",
                   A.Get<EventsSchema, Type>>
               ) : "type" extends keyof Payload ? (
                 A.CustomError<
@@ -691,7 +692,7 @@ export namespace Machine {
    * @template D The type of the state machine definition.
    */
   export type Context<D> =
-    A.Get<D, ["schema", "context", $$t], A.Get<D, "context">>;
+    A.Get<D, ["schema", "context", typeof $$t], A.Get<D, "context">>;
 
   /**
    * Collections of types and interfaces for the context of the state machine.
@@ -720,7 +721,7 @@ export namespace Machine {
           // } else {
           //   return never
           // }
-          A.Get<EventsSchema, [T, $$t]> extends infer E ? (
+          A.Get<EventsSchema, [T, typeof $$t]> extends infer E ? (
             E extends any ? (
               O.ShallowClean<{ type: T } & E>
             ) : (

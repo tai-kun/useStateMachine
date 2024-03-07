@@ -1,7 +1,4 @@
-/**
- * Identifier for context or event types.
- */
-export const $$t = Symbol("$$t");
+import type { $$t } from "./src";
 
 /**
  * TypeScript will automatically infer your context type; event types are generated automatically.
@@ -13,7 +10,7 @@ export const $$t = Symbol("$$t");
  *
  * const [state, send] = useStateMachine({
  *   schema: {
- *     context: t<{ toggleCount: number }>(),
+ *     context: {} as t<{ toggleCount: number }>,
  *   },
  *   context: { toggleCount: 0 },
  *   initial: "inactive",
@@ -38,9 +35,9 @@ export const $$t = Symbol("$$t");
  * ```ts
  * const [machine, send] = useStateMachine({
  *   schema: {
- *     context: t<{ timeout?: number }>(),
+ *     context: {} as t<{ timeout?: number }>,
  *     events: {
- *       PING: t<{ value: number }>(),
+ *       PING: {} as t<{ value: number }>,
  *     },
  *   },
  *   context: {timeout: undefined},
@@ -68,4 +65,4 @@ export const $$t = Symbol("$$t");
  * @returns An object that represents the type of the context or event.
  * @see https://usestatemachine.js.org/docs/api/#schema-context--event-typing
  */
-export const t = <T>() => ({ [$$t]: undefined as T });
+export type t<T> = { [$$t]: T };

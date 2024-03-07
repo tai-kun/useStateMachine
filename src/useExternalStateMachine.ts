@@ -79,4 +79,4 @@ export {
   type CreateExternalStateMachine,
 } from "./createExternalStateMachine";
 
-export { t } from "./core/util";
+export { type t } from "./core/util";

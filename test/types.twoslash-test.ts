@@ -1,7 +1,7 @@
-import { $$t } from "../src//core/util";
 import type { Machine } from "../src/core/src";
 /* eslint-disable react-hooks/rules-of-hooks */
 import { A, type LS } from "../src/core/src";
+import type { t } from "../src/core/util";
 
 const useStateMachine = (() => []) as any as {
   <const D extends Machine.Definition<D>>(
@@ -11,7 +11,6 @@ const useStateMachine = (() => []) as any as {
     send: Machine.Send<Machine.Definition.FromTypeParamter<D>>,
   ];
 };
-const t = <T>() => ({}) as { [$$t]: T };
 
 const query = () =>
   (global as any).twoSlashQueries.shift() as {
@@ -154,14 +153,14 @@ describe("Machine.Definition", () => {
         });
 
         expect(query().text).toContain(
-          "Error: Use `t` to define payload type, eg `t<{ foo: number }>()`",
+          "Error: Use `t` to define payload type, eg `{} as t<{ foo: number }>`",
         );
 
         useStateMachine({
           schema: {
             events: {
               // @ts-expect-error
-              X: "Error: Use `t` to define payload type, eg `t<{ foo: number }>()`",
+              X: "Error: Use `t` to define payload type, eg `{} as t<{ foo: number }>`",
             },
           },
           initial: "a",
@@ -173,7 +172,7 @@ describe("Machine.Definition", () => {
         useStateMachine({
           schema: {
             events: {
-              X: t<{ foo: number }>(),
+              X: {} as t<{ foo: number }>,
             },
           },
           initial: "a",
@@ -184,7 +183,7 @@ describe("Machine.Definition", () => {
           schema: {
             events: {
               // @ts-expect-error
-              X: t<1>(),
+              X: {} as t<1>,
             },
           },
         });
@@ -193,7 +192,7 @@ describe("Machine.Definition", () => {
           schema: {
             events: {
               // @ts-expect-error
-              X: t<"FOO">(),
+              X: {} as t<"FOO">,
             },
           },
         });
@@ -204,20 +203,20 @@ describe("Machine.Definition", () => {
           schema: {
             events: {
               // @ts-expect-error
-              X: t<"FOO">(),
+              X: {} as t<"FOO">,
               //  ^?
             },
           },
         });
         expect(query().text).toContain(
-          "Error: An event payload should be an object, eg `t<{ foo: number }>()`",
+          "Error: An event payload should be an object, eg `{} as t<{ foo: number }>`",
         );
 
         useStateMachine({
           schema: {
             events: {
               // @ts-expect-error
-              X: t<"Error: An event payload should be an object, eg `t<{ foo: number }>()`">(),
+              X: {} as t<"Error: An event payload should be an object, eg `t<{ foo: number }>()`">,
             },
           },
         });
@@ -228,7 +227,7 @@ describe("Machine.Definition", () => {
           schema: {
             events: {
               // @ts-expect-error
-              X: t<{ type: number }>(),
+              X: {} as t<{ type: number }>,
             },
           },
           initial: "a",
@@ -241,7 +240,7 @@ describe("Machine.Definition", () => {
           schema: {
             events: {
               // @ts-expect-error
-              X: t<{ type: number; foo: string }>(),
+              X: {} as t<{ type: number; foo: string }>,
               //  ^?
             },
           },
@@ -257,7 +256,7 @@ describe("Machine.Definition", () => {
           schema: {
             events: {
               // @ts-expect-error
-              X: t<"Error: An event payload cannot have a property `type` as it's already defined. In this case as 'X'">(),
+              X: {} as t<"Error: An event payload cannot have a property `type` as it's already defined. In this case as 'X'">,
             },
           },
           initial: "a",
@@ -293,7 +292,7 @@ describe("Machine.Definition", () => {
           schema: {
             events: {
               // @ts-expect-error
-              $$initial: t<{}>(),
+              $$initial: {} as t<{}>,
             },
           },
           initial: "a",
@@ -306,7 +305,7 @@ describe("Machine.Definition", () => {
           schema: {
             events: {
               // @ts-expect-error
-              $$initial: t<{}>(),
+              $$initial: {} as t<{}>,
               // ^?
             },
           },
@@ -361,13 +360,14 @@ describe("Machine.Definition", () => {
         });
 
         expect(query().text).toContain(
-          "Error: Use `t` to define type, eg `t<{ foo: number }>()`",
+          "Error: Use `t` to define type, eg `{} as t<{ foo: number }>`",
         );
 
         useStateMachine({
           schema: {
             // @ts-expect-error
-            context: "Error: Use `t` to define type, eg `t<{ foo: number }>()`",
+            context:
+              "Error: Use `t` to define type, eg `{} as t<{ foo: number }>`",
           },
           initial: "a",
           states: { a: {} },
@@ -376,14 +376,14 @@ describe("Machine.Definition", () => {
 
       it("expects any type", () => {
         useStateMachine({
-          schema: { context: t<{ foo?: number }>() },
+          schema: { context: {} as t<{ foo?: number }> },
           context: { foo: 1 },
           initial: "a",
           states: { a: {} },
         });
 
         useStateMachine({
-          schema: { context: t<"foo">() },
+          schema: { context: {} as t<"foo"> },
           context: "foo",
           initial: "a",
           states: { a: {} },
@@ -397,7 +397,7 @@ describe("Machine.Definition", () => {
       // @ts-expect-error
       useStateMachine({
         schema: {
-          context: t<{ foo: number }>(),
+          context: {} as t<{ foo: number }>,
         },
         initial: "a",
         states: { a: {} },
@@ -405,7 +405,7 @@ describe("Machine.Definition", () => {
 
       useStateMachine({
         schema: {
-          context: t<{ foo: number }>(),
+          context: {} as t<{ foo: number }>,
         },
         context: {
           // @ts-expect-error
@@ -417,7 +417,7 @@ describe("Machine.Definition", () => {
 
       useStateMachine({
         schema: {
-          context: t<{ foo: number }>(),
+          context: {} as t<{ foo: number }>,
         },
         context: { foo: 1 },
         initial: "a",
@@ -426,7 +426,7 @@ describe("Machine.Definition", () => {
 
       useStateMachine({
         schema: {
-          context: t<undefined>(),
+          context: {} as t<undefined>,
         },
         // @ts-expect-error
         context: { foo: 1 },
@@ -642,8 +642,8 @@ describe("Machine.Definition", () => {
         schema: {
           events: {
             $$exhaustive: true,
-            X: t<{}>(),
-            Y: t<{}>(),
+            X: {} as t<{}>,
+            Y: {} as t<{}>,
           },
         },
         initial: "a",
@@ -669,8 +669,8 @@ describe("Machine.Definition", () => {
         schema: {
           events: {
             $$exhaustive: false,
-            X: t<{}>(),
-            Y: t<{}>(),
+            X: {} as t<{}>,
+            Y: {} as t<{}>,
           },
         },
         initial: "a",
@@ -689,8 +689,8 @@ describe("Machine.Definition", () => {
       useStateMachine({
         schema: {
           events: {
-            X: t<{}>(),
-            Y: t<{}>(),
+            X: {} as t<{}>,
+            Y: {} as t<{}>,
           },
         },
         initial: "a",
@@ -712,8 +712,8 @@ describe("Machine.Definition", () => {
         schema: {
           events: {
             $$exhaustive: true,
-            X: t<{}>(),
-            Y: t<{}>(),
+            X: {} as t<{}>,
+            Y: {} as t<{}>,
           },
         },
         initial: "a",
@@ -737,8 +737,8 @@ describe("Machine.Definition", () => {
         schema: {
           events: {
             $$exhaustive: true,
-            X: t<{}>(),
-            Y: t<{}>(),
+            X: {} as t<{}>,
+            Y: {} as t<{}>,
           },
         },
         initial: "a",
@@ -758,8 +758,8 @@ describe("Machine.Definition", () => {
         schema: {
           events: {
             $$exhaustive: true,
-            X: t<{}>(),
-            Y: t<{}>(),
+            X: {} as t<{}>,
+            Y: {} as t<{}>,
           },
         },
         initial: "a",
@@ -782,8 +782,8 @@ describe("Machine.Definition", () => {
         schema: {
           events: {
             $$exhaustive: true,
-            X: t<{}>(),
-            Y: t<{}>(),
+            X: {} as t<{}>,
+            Y: {} as t<{}>,
           },
         },
         initial: "a",
@@ -804,11 +804,11 @@ describe("Machine.Definition", () => {
     useStateMachine({
       schema: {
         events: {
-          X: t<{ foo: number }>(),
-          Y: t<{ bar?: number }>(),
-          Z: t<{ baz: string }>(),
+          X: {} as t<{ foo: number }>,
+          Y: {} as t<{ bar?: number }>,
+          Z: {} as t<{ baz: string }>,
         },
-        context: t<{ foo?: number }>(),
+        context: {} as t<{ foo?: number }>,
       },
       context: {},
       initial: "a",
@@ -1116,8 +1116,8 @@ describe("Machine.Definition", () => {
       useStateMachine({
         schema: {
           events: {
-            X: t<{ foo: string }>(),
-            Y: t<{}>(),
+            X: {} as t<{ foo: string }>,
+            Y: {} as t<{}>,
           },
         },
         initial: "a",
@@ -1163,11 +1163,11 @@ describe("UseStateMachine", () => {
   const [state, send] = useStateMachine({
     schema: {
       events: {
-        X: t<{ foo: number }>(),
-        Y: t<{ bar?: number }>(),
-        Z: t<{}>(),
+        X: {} as t<{ foo: number }>,
+        Y: {} as t<{ bar?: number }>,
+        Z: {} as t<{}>,
       },
-      context: t<{ foo?: number }>(),
+      context: {} as t<{ foo?: number }>,
     },
     context: {},
     initial: "a",
@@ -1279,7 +1279,7 @@ describe("Machine.Definition.FromTypeParamter", () => {
 describe("fix(Machine.State['nextEvents']): only normalize don't widen", () => {
   const [state] = useStateMachine({
     schema: {
-      events: { Y: t<{}>() },
+      events: { Y: {} as t<{}> },
     },
     context: {},
     initial: "a",
@@ -1296,7 +1296,7 @@ describe("workaround for #65", () => {
   const [_, send] = useStateMachine({
     schema: {
       events: {
-        A: t<{ value: string }>(),
+        A: {} as t<{ value: string }>,
       },
     },
     initial: "a",
