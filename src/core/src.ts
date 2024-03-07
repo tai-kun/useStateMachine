@@ -15,9 +15,25 @@ export declare const $$t: unique symbol;
 export declare const $$mt: unique symbol;
 
 /**
- * Identifier for the transferable type.
+ * Identifier for the Transfer type.
  */
 export const $$tf = Symbol("$$tf");
+
+/**
+ * A value to transfer so that the state machine can reference the component's value.
+ * 
+ * @template T The type of the value to transfer.
+ */
+export type Transfer<T = unknown> = {
+  /**
+   * The current value of the reference.
+   */
+  readonly current: T;
+  /**
+   * ! Do not remove this property.
+   */
+  [$$tf]: never;
+};
 
 /* -----------------------------------------------------------------------------
  *
@@ -52,22 +68,6 @@ export type Machine<
  * Collections of types and interfaces for the state machine.
  */
 export namespace Machine {
-  /**
-   * A value to transfer so that the state machine can reference the component's value.
-   * 
-   * @template T The type of the value to transfer.
-   */
-  export type Transferable<T = unknown> = {
-    /**
-     * The current value of the reference.
-     */
-    readonly current: T;
-    /**
-     * ! Do not remove this property.
-     */
-    [$$tf]: never;
-  };
-
   /**
    * The state machine for internal usage.
    * 

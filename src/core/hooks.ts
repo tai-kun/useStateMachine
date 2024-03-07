@@ -1,9 +1,9 @@
 import { useRef } from "react";
 import { type Dispatchers, processEffect } from "./logic";
 import { useEffect } from "./react";
-import { $$tf, type Machine } from "./src";
+import { $$tf, type Machine, type Transfer } from "./src";
 
-export function isTransferable(value: unknown): value is Machine.Transferable {
+export function isTransfer(value: unknown): value is Transfer {
   return typeof value === "object" && value !== null && $$tf in value;
 }
 
@@ -19,7 +19,7 @@ export function useDefinition(
   args: unknown[],
 ) {
   const params = args.map((arg) =>
-    isTransferable(arg) ? useSyncedRef(arg.current) : arg,
+    isTransfer(arg) ? useSyncedRef(arg.current) : arg,
   );
 
   return useSingleton(() =>

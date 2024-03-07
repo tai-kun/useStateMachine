@@ -4,10 +4,10 @@ import type { A, Machine } from "./core/src";
  * A function that creates a state machine definition.
  * The machine function is executed only once.
  * If you use dynamically changing arguments, you need to mark them as transferable values.
- * If there are arguments marked as transferable (by `Transferable`), they must be transferred with the `transfer` function.
+ * If there are arguments marked as transferable (by `Transfer`), they must be transferred with the `transfer` function.
  *
  * ```ts
- * function machine(staticParam: string, onChange: Transferable<Function>) {
+ * function machine(staticParam: string, onChange: Transfer<Function>) {
  *   return createStateMachine({
  *     // State Machine Definition
  *     // context: staticParam,

@@ -1,4 +1,4 @@
-import { type $$t, $$tf, type Machine } from "./src";
+import { type $$t, $$tf, type Transfer } from "./src";
 
 /**
  * TypeScript will automatically infer your context type; event types are generated automatically.
@@ -67,7 +67,7 @@ import { type $$t, $$tf, type Machine } from "./src";
  */
 export type t<T> = { [$$t]: T };
 
-export function transfer<T>(value: T): Machine.Transferable<T> {
+export function transfer<T>(value: T): Transfer<T> {
   return {
     current: value,
     [$$tf]: 0 as never,
