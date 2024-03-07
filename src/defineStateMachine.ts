@@ -1,4 +1,9 @@
-import type { A, Machine, SyncedRefObject } from "./core/src";
+import type { A, Machine } from "./core/src";
+import type {
+  DefineWithPropsImpl,
+  DefineWithoutPropsImpl,
+} from "./core/useDefinition";
+import type { SyncedRefObject } from "./core/useSyncedRef";
 
 type CreateDefinition = {
   /**
@@ -43,40 +48,6 @@ type DefineWithProps<D, P> = {
    * @returns The state machine definition.
    */
   (props: SyncedRefObject<P>, create: CreateDefinition): D;
-};
-
-type CreateDefinitionImpl = {
-  /**
-   * Define a state machine to use with `useStateMachine` or `useSyncedStateMachine`.
-   *
-   * @param definition The state machine definition.
-   * @returns The state machine definition.
-   */
-  (definition: Machine.Definition.Impl): Machine.Definition.Impl;
-};
-
-type DefineWithoutPropsImpl = {
-  /**
-   * Define a state machine to use with `useStateMachine` or `useSyncedStateMachine`.
-   *
-   * @param create A function that creates a state machine definition.
-   * @returns The state machine definition.
-   */
-  (create: CreateDefinitionImpl): Machine.Definition.Impl;
-};
-
-type DefineWithPropsImpl = {
-  /**
-   * Define a state machine to use with `useStateMachine` or `useSyncedStateMachine`.
-   *
-   * @param props A reference to the props object.
-   * @param create A function that creates a state machine definition.
-   * @returns The state machine definition.
-   */
-  (
-    props: SyncedRefObject,
-    create: CreateDefinitionImpl,
-  ): Machine.Definition.Impl;
 };
 
 type DefineStateMachine = {

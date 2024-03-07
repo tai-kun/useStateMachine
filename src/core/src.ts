@@ -8,18 +8,6 @@ import type { $$t } from "./util"
 
 export type $$t = typeof $$t;
 
-/**
- * A reference to an object.
- *
- * @template T The type of the object.
- */
-export type SyncedRefObject<T = unknown> = {
-  /**
-   * The current value of the reference.
-   */
-  readonly current: T;
-};
-
 /* -----------------------------------------------------------------------------
  *
  * See https://github.com/cassiozen/useStateMachine/blob/main/src/types.ts
