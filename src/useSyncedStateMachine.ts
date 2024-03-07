@@ -231,3 +231,4 @@ export {
 } from "./createStateMachine";
 
 export { type t, transfer } from "./core/util";
+export type { Machine, Transfer } from "./core/src";

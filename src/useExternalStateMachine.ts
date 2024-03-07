@@ -80,3 +80,4 @@ export {
 } from "./createExternalStateMachine";
 
 export { type t } from "./core/util";
+export type { Machine } from "./core/src";

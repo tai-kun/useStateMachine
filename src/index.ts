@@ -21,3 +21,4 @@ export {
   type UseStateMachine,
 } from "./useStateMachine";
 export { type t, transfer } from "./core/util";
+export type { Machine, Transfer } from "./core/src";
