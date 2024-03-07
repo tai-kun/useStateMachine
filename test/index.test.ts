@@ -4,7 +4,8 @@ import { act, renderHook } from "@testing-library/react";
 import { useMemo, useSyncExternalStore } from "react";
 import {
   type UseStateMachine,
-  createStateMachine,
+  createExternalStateMachine,
+  // defineStateMachine,
   t,
   useExternalStateMachine,
   useStateMachine,
@@ -14,9 +15,50 @@ import {
 // @ts-expect-error
 global.__DEV__ = true;
 
+// {
+//   const machine = defineStateMachine((create) =>
+//     create({
+//       initial: "inactive",
+//       states: {
+//         inactive: {
+//           on: { TOGGLE: "active" },
+//         },
+//         active: {
+//           on: { TOGGLE: "inactive" },
+//         },
+//       },
+//     }),
+//   );
+//   const [machineState, send] = useStateMachine(machine);
+// }
+// {
+//   const machine = defineStateMachine<{ onChange(): void }>()((ref, create) =>
+//     create({
+//       initial: "inactive",
+//       states: {
+//         inactive: {
+//           on: { TOGGLE: "active" },
+//           effect() {
+//             ref.current.onChange();
+//           },
+//         },
+//         active: {
+//           on: { TOGGLE: "inactive" },
+//           effect() {
+//             ref.current.onChange();
+//           },
+//         },
+//       },
+//     }),
+//   );
+//   const [machineState, send] = useStateMachine(machine, {
+//     onChange() {},
+//   });
+// }
+
 function useStateMachineImplementedByUseExternalStateMachine(def: any) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
-  const machine = useMemo(() => createStateMachine(def), []);
+  const machine = useMemo(() => createExternalStateMachine(def), []);
   return useExternalStateMachine(machine);
 }
 

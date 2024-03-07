@@ -1,9 +1,16 @@
-import type { UseStateMachine } from "../src";
 import { $$t } from "../src//core/util";
+import type { Machine } from "../src/core/src";
 /* eslint-disable react-hooks/rules-of-hooks */
 import { A, type LS } from "../src/core/src";
 
-const useStateMachine = (() => []) as any as UseStateMachine;
+const useStateMachine = (() => []) as any as {
+  <const D extends Machine.Definition<D>>(
+    definition: A.InferNarrowestObject<D>,
+  ): [
+    state: Machine.State<Machine.Definition.FromTypeParamter<D>>,
+    send: Machine.Send<Machine.Definition.FromTypeParamter<D>>,
+  ];
+};
 const t = <T>() => ({}) as { [$$t]: T };
 
 const query = () =>

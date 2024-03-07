@@ -1,16 +1,27 @@
 export {
-  default as useExternalStateMachine,
+  createExternalStateMachine,
+  type CreateExternalStateMachine,
+} from "./createExternalStateMachine";
+export {
+  defineStateMachine,
+  type SyncedRefObject,
+  type CreateDefinition,
+  type DefineWithoutProps,
+  type DefineWithProps,
+  type DefineStateMachine,
+} from "./defineStateMachine";
+export {
+  useExternalStateMachine,
   type UseExternalStateMachine,
-  createStateMachine,
 } from "./useExternalStateMachine";
 export {
-  default as useSyncedStateMachine,
+  useSyncedStateMachine,
   type UseSyncedStateMachine,
 } from "./useSyncedStateMachine";
 export {
   /** @deprecated Use `import { useStateMachine } from "@tai-kun/use-state-machine"` instead. */
-  default,
-  default as useStateMachine,
+  useStateMachine as default,
+  useStateMachine,
   type UseStateMachine,
 } from "./useStateMachine";
 export { t } from "./core/util";

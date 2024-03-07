@@ -6,7 +6,19 @@
 
 import type { $$t } from "./util"
 
-type $$t = typeof $$t;
+export type $$t = typeof $$t;
+
+/**
+ * A reference to an object.
+ *
+ * @template T The type of the object.
+ */
+export type SyncedRefObject<T = unknown> = {
+  /**
+   * The current value of the reference.
+   */
+  readonly current: T;
+};
 
 /* -----------------------------------------------------------------------------
  *
@@ -15,9 +27,71 @@ type $$t = typeof $$t;
  * -------------------------------------------------------------------------- */
 
 /**
+ * The state machine.
+ * 
+ * @template D The type of the state machine definition.
+ * @template P The type of the reference object.
+ */
+export type Machine<
+  D = Machine.Definition.Impl,
+  P = never,
+> = {
+  /**
+   * Creates a new state machine.
+   * 
+   * @param args The arguments for the state machine.
+   * @returns The state machine definition.
+   */
+  new: (...args: unknown[]) => Machine.Definition.Impl
+  /**
+   * @internal
+   */
+  [$$t]: {
+    state: Machine.State<Machine.Definition.FromTypeParamter<D>>
+    send: Machine.Send<Machine.Definition.FromTypeParamter<D>>
+    args: [P] extends [never] ? [] : [props: P]
+  }
+};
+
+/**
  * Collections of types and interfaces for the state machine.
  */
 export namespace Machine {
+  /**
+   * The state machine for internal usage.
+   * 
+   * @param args The arguments for the state machine.
+   * @returns The state machine definition.
+   */
+  export type Impl = {
+    /**
+     * Creates a new state machine.
+     * 
+     * @param args The arguments for the state machine.
+     * @returns The state machine definition.
+     */
+    new: (...args: unknown[]) => Machine.Definition.Impl
+    /**
+     * @internal
+     */
+    [$$t]: {
+      state: Machine.State.Impl
+      send: Machine.Send.Impl
+      args: [param?: unknown]
+    }
+  };
+
+  /**
+   * @internal
+   */
+  export type Type = {
+    [$$t]: {
+      state: unknown
+      send: unknown
+      args: unknown[]
+    }
+  };
+
   /**
    * External state machine object.
    *

@@ -1,69 +1,15 @@
-import createInitialState from "./core/createInitialState";
-import processDispatch, { type Action } from "./core/processDispatch";
 import { useEffect, useRef, useSyncExternalStore } from "./core/react";
-import type { A, Machine } from "./core/src";
+import type { Machine } from "./core/src";
 import useSingleton from "./core/useSingleton";
 import useSync, { type Dispatchers } from "./core/useSync";
 
-type CreateStateMachine = <const D extends Machine.Definition<D>>(
-  definition: A.InferNarrowestObject<D>,
-) => Machine.External<D>;
+type UseExternalStateMachine = {
+  <const M extends { getState: any; send: any }>(
+    machine: M,
+  ): [state: ReturnType<M["getState"]>, send: M["send"]];
+};
 
-export type UseExternalStateMachine = <
-  const M extends {
-    readonly getState: any;
-    readonly send: any;
-  },
->(
-  machine: M,
-) => [state: ReturnType<M["getState"]>, send: M["send"]];
-
-function create(def: Machine.Definition.Impl): Machine.External.Impl {
-  let state = createInitialState(def);
-  const callbacks = new Set<(state: Machine.State.Impl) => void>();
-
-  function dispatch(action: Action) {
-    const nextState = processDispatch(def, state, action);
-
-    if (!Object.is(nextState, state)) {
-      state = nextState;
-
-      for (const callback of callbacks) {
-        callback(state);
-      }
-    }
-  }
-
-  function send(sendable: Machine.Sendable.Impl) {
-    dispatch({
-      type: "SEND",
-      payload: sendable,
-    });
-  }
-
-  return {
-    def,
-    send,
-    getState: () => state,
-    subscribe(callback: (state: Machine.State.Impl) => void) {
-      callbacks.add(callback);
-
-      return () => {
-        callbacks.delete(callback);
-      };
-    },
-    setContext(updater: Machine.ContextUpdater.Impl) {
-      dispatch({
-        type: "SET_CONTEXT",
-        payload: updater,
-      });
-
-      return { send };
-    },
-  };
-}
-
-function useExternalStateMachine(machine: Machine.External.Impl) {
+function $useExternalStateMachine(machine: Machine.External.Impl) {
   const isMounted = useRef(false);
 
   useEffect(() => {
@@ -103,39 +49,35 @@ function useExternalStateMachine(machine: Machine.External.Impl) {
   return [state, dispatchers.send];
 }
 
-export { type CreateStateMachine };
-
-/**
- * Creates a state machine object.
- *
- * ```ts
- * const machine = createStateMachine(
- *   // State Machine Definition
- * );
- * ```
- *
- * @template D The type of the state machine definition.
- * @param definition The state machine definition.
- * @returns A state machine object.
- */
-export const createStateMachine = create as unknown as CreateStateMachine;
-
 /**
  * Hook to use a state machine.
  *
  * Similar to `useStateMachine`, but uses `React.useSyncExternalStore` instead of `React.useState` to manage state.
  *
  * ```ts
- * const machine = createStateMachine(
+ * const machine = createExternalStateMachine({
  *   // State Machine Definition
- * );
- * const [state, send] = useExternalStateMachine(machine);
+ * });
+ *
+ * function App() {
+ *   const [machineState, send] = useExternalStateMachine(machine);
+ *
+ *   // ...
+ * }
  * ```
  *
  * @template D The type of the state machine definition.
  * @param machine A state machine object.
  * @returns An array with the current state and the send function.
  */
-export default useExternalStateMachine as unknown as UseExternalStateMachine;
+export const useExternalStateMachine =
+  $useExternalStateMachine as unknown as UseExternalStateMachine;
+
+export { type UseExternalStateMachine };
+
+export {
+  createExternalStateMachine,
+  type CreateExternalStateMachine,
+} from "./createExternalStateMachine";
 
 export { t } from "./core/util";
