@@ -1,4 +1,4 @@
-import type { $$t } from "./src";
+import { type $$t, $$tf, type Machine } from "./src";
 
 /**
  * TypeScript will automatically infer your context type; event types are generated automatically.
@@ -66,3 +66,10 @@ import type { $$t } from "./src";
  * @see https://usestatemachine.js.org/docs/api/#schema-context--event-typing
  */
 export type t<T> = { [$$t]: T };
+
+export function transfer<T>(value: T): Machine.Transferable<T> {
+  return {
+    current: value,
+    [$$tf]: 0 as never,
+  };
+}

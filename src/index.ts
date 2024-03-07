@@ -3,13 +3,9 @@ export {
   type CreateExternalStateMachine,
 } from "./createExternalStateMachine";
 export {
-  defineStateMachine,
-  type SyncedRefObject,
-  type CreateDefinition,
-  type DefineWithoutProps,
-  type DefineWithProps,
-  type DefineStateMachine,
-} from "./defineStateMachine";
+  createStateMachine,
+  type CreateStateMachine,
+} from "./createStateMachine";
 export {
   useExternalStateMachine,
   type UseExternalStateMachine,
@@ -24,4 +20,4 @@ export {
   useStateMachine,
   type UseStateMachine,
 } from "./useStateMachine";
-export { type t } from "./core/util";
+export { type t, transfer } from "./core/util";

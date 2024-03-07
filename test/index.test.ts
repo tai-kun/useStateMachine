@@ -1,11 +1,11 @@
 import "global-jsdom/register";
 
 import { act, renderHook } from "@testing-library/react";
-import { useMemo, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
 import {
   type UseStateMachine,
   createExternalStateMachine,
-  defineStateMachine,
+  createStateMachine,
   t,
   useExternalStateMachine,
   useStateMachine,
@@ -15,9 +15,9 @@ import {
 // @ts-expect-error
 global.__DEV__ = true;
 
-function useStateMachineWithPredefinedDefinition(def: any) {
+function useStateMachineWithPredefinedMachine(def: any) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: ignore
-  const machine = useMemo(() => defineStateMachine(() => def), []);
+  const machine = useCallback(() => createStateMachine(def), []);
   return useStateMachine(machine);
 }
 
@@ -58,7 +58,7 @@ function useStateMachineImplementedByUseSyncedStateMachine(def: any) {
 describe.each(
   [
     useStateMachine,
-    useStateMachineWithPredefinedDefinition as UseStateMachine,
+    useStateMachineWithPredefinedMachine as UseStateMachine,
     useStateMachineImplementedByUseExternalStateMachine as UseStateMachine,
     useStateMachineImplementedByUseSyncedStateMachine as UseStateMachine,
   ].map((useHook) =>

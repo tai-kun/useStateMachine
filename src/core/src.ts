@@ -9,6 +9,16 @@
  */
 export declare const $$t: unique symbol;
 
+/**
+ * Identifier for the machine type.
+ */
+export declare const $$mt: unique symbol;
+
+/**
+ * Identifier for the transferable type.
+ */
+export const $$tf = Symbol("$$tf");
+
 /* -----------------------------------------------------------------------------
  *
  * See https://github.com/cassiozen/useStateMachine/blob/main/src/types.ts
@@ -19,26 +29,22 @@ export declare const $$t: unique symbol;
  * The state machine.
  * 
  * @template D The type of the state machine definition.
- * @template P The type of the reference object.
+ * @template A The type of the arguments for the state machine.
  */
 export type Machine<
   D = Machine.Definition.Impl,
-  P = never,
-> = {
+  A extends unknown[] = unknown[],
+> = (...args: A) => {
   /**
-   * Creates a new state machine.
-   * 
-   * @param args The arguments for the state machine.
-   * @returns The state machine definition.
+   * The state machine definition.
    */
-  new: (...args: unknown[]) => Machine.Definition.Impl
+  def: D
   /**
-   * @internal
+   * ! **Do not actually use this property.
    */
-  [$$t]: {
+  [$$mt]: {
     state: Machine.State<Machine.Definition.FromTypeParamter<D>>
     send: Machine.Send<Machine.Definition.FromTypeParamter<D>>
-    args: [P] extends [never] ? [] : [props: P]
   }
 };
 
@@ -47,37 +53,49 @@ export type Machine<
  */
 export namespace Machine {
   /**
+   * A value to transfer so that the state machine can reference the component's value.
+   * 
+   * @template T The type of the value to transfer.
+   */
+  export type Transferable<T = unknown> = {
+    /**
+     * The current value of the reference.
+     */
+    readonly current: T;
+    /**
+     * ! Do not remove this property.
+     */
+    [$$tf]: never;
+  };
+
+  /**
    * The state machine for internal usage.
    * 
    * @param args The arguments for the state machine.
    * @returns The state machine definition.
    */
-  export type Impl = {
+  export type Impl = (...args: unknown[]) => {
     /**
-     * Creates a new state machine.
-     * 
-     * @param args The arguments for the state machine.
-     * @returns The state machine definition.
+     * The state machine definition.
      */
-    new: (...args: unknown[]) => Machine.Definition.Impl
+    def: Machine.Definition.Impl
     /**
-     * @internal
+     * ! **Do not actually use this property.
      */
-    [$$t]: {
+    [$$mt]: {
       state: Machine.State.Impl
       send: Machine.Send.Impl
-      args: [param?: unknown]
     }
   };
 
   /**
    * @internal
    */
-  export type Type = {
-    [$$t]: {
+  export type Type = (...args: unknown[]) => {
+    def: unknown
+    [$$mt]: {
       state: unknown
       send: unknown
-      args: unknown[]
     }
   };
 

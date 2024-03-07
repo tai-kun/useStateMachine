@@ -1,41 +1,11 @@
 import { useRef } from "react";
 import { type Dispatchers, processEffect } from "./logic";
 import { useEffect } from "./react";
-import type { Machine } from "./src";
+import { $$tf, type Machine } from "./src";
 
-export type CreateDefinitionImpl = {
-  /**
-   * Define a state machine to use with `useStateMachine` or `useSyncedStateMachine`.
-   *
-   * @param definition The state machine definition.
-   * @returns The state machine definition.
-   */
-  (definition: Machine.Definition.Impl): Machine.Definition.Impl;
-};
-
-export type DefineWithoutPropsImpl = {
-  /**
-   * Define a state machine to use with `useStateMachine` or `useSyncedStateMachine`.
-   *
-   * @param create A function that creates a state machine definition.
-   * @returns The state machine definition.
-   */
-  (create: CreateDefinitionImpl): Machine.Definition.Impl;
-};
-
-export type DefineWithPropsImpl = {
-  /**
-   * Define a state machine to use with `useStateMachine` or `useSyncedStateMachine`.
-   *
-   * @param props A reference to the props object.
-   * @param create A function that creates a state machine definition.
-   * @returns The state machine definition.
-   */
-  (
-    props: SyncedRefObject,
-    create: CreateDefinitionImpl,
-  ): Machine.Definition.Impl;
-};
+export function isTransferable(value: unknown): value is Machine.Transferable {
+  return typeof value === "object" && value !== null && $$tf in value;
+}
 
 /**
  * Returns a state machine definition.
@@ -46,16 +16,14 @@ export type DefineWithPropsImpl = {
  */
 export function useDefinition(
   arg0: Machine.Definition.Impl | Machine.Impl,
-  ...args: [props?: unknown]
+  args: unknown[],
 ) {
-  const props = useSyncedRef(args[0]);
+  const params = args.map((arg) =>
+    isTransferable(arg) ? useSyncedRef(arg.current) : arg,
+  );
 
   return useSingleton(() =>
-    "new" in arg0
-      ? args.length
-        ? (arg0.new as DefineWithPropsImpl)(props, (d) => d)
-        : (arg0.new as DefineWithoutPropsImpl)((d) => d)
-      : arg0,
+    typeof arg0 === "function" ? arg0(...params).def : arg0,
   );
 }
 
@@ -68,9 +36,9 @@ export function useDefinition(
  * @returns The memoized value.
  */
 export function useSingleton<T extends object>(compute: () => T): T {
-  const ref = useRef<T | null>(null);
+  const ref = useRef<T>();
 
-  if (ref.current === null) {
+  if (!ref.current) {
     ref.current = compute();
   }
 
@@ -112,7 +80,7 @@ export type SyncedRefObject<T = unknown> = {
 /**
  * Like `useRef`, but the `current` value is always in sync with the value passed to the hook.
  *
- * @param value The initial value of the reference.
+ * @param value The value of the reference.
  * @returns A reference to the value.
  */
 export function useSyncedRef<T>(value: T): SyncedRefObject<T> {

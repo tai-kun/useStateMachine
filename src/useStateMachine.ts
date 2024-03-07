@@ -6,7 +6,7 @@ import {
 } from "./core/hooks";
 import { type Action, createInitialState, processDispatch } from "./core/logic";
 import { useState } from "./core/react";
-import type { $$t, A, Machine } from "./core/src";
+import type { $$mt, A, Machine } from "./core/src";
 
 type UseStateMachine = {
   /**
@@ -273,14 +273,18 @@ type UseStateMachine = {
    */
   <const M extends Machine.Type>(
     machine: M,
-    ...args: M[typeof $$t]["args"]
-  ): [state: M[typeof $$t]["state"], send: M[typeof $$t]["send"]];
+    ...args: Parameters<M>
+  ): [
+    state: ReturnType<M>[typeof $$mt]["state"],
+    send: ReturnType<M>[typeof $$mt]["send"],
+  ];
 };
 
 function $useStateMachine(
-  ...args: [Machine.Definition.Impl | Machine.Impl, unknown?]
+  arg0: Machine.Definition.Impl | Machine.Impl,
+  ...args: unknown[]
 ) {
-  const def = useDefinition(...args);
+  const def = useDefinition(arg0, args);
   const [state, setState] = useState(() => createInitialState(def));
   const dispatchers = useSingleton<Dispatchers>(() => {
     function dispatch(action: Action) {
@@ -317,12 +321,8 @@ export const useStateMachine = $useStateMachine as unknown as UseStateMachine;
 export { type UseStateMachine };
 
 export {
-  defineStateMachine,
-  type SyncedRefObject,
-  type CreateDefinition,
-  type DefineWithoutProps,
-  type DefineWithProps,
-  type DefineStateMachine,
-} from "./defineStateMachine";
+  createStateMachine,
+  type CreateStateMachine,
+} from "./createStateMachine";
 
-export { type t } from "./core/util";
+export { type t, transfer } from "./core/util";

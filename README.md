@@ -21,14 +21,14 @@ See the user-facing docs at: [usestatemachine.js.org](https://usestatemachine.js
 
 | Signature | Format | Size (minified + brotlied) | Size (minified + gzipped) |
 | :-------- | :----: | -------------------------: | ------------------------: |
-| `import * from "@tai-kun/use-state-machine/default"`  | **ESM** | **885 B**   | **958 B**   |
-| "                                                     |   CJS   | 1.29 KB     | 1.39 KB     |
-| `import * from "@tai-kun/use-state-machine/external"` | **ESM** | **924 B**   | **1.01 KB** |
-| "                                                     |   CJS   | 1.34 KB     | 1.44 KB     |
-| `import * from "@tai-kun/use-state-machine/synced"`   | **ESM** | **1.01 KB** | 1.08 KB     |
-| "                                                     |   CJS   | 1.43 KB     | 1.54 KB     |
-| `import * from "@tai-kun/use-state-machine"`          |   ESM   | 1.28 KB     | 1.38 KB     |
-| "                                                     |   CJS   | 1.72 KB     | 1.86 KB     |
+| `import * from "@tai-kun/use-state-machine/default"`  | **ESM** | **897 B**   | **964 B** |
+| "                                                     |   CJS   | 1.3  KB     | 1.39 KB   |
+| `import * from "@tai-kun/use-state-machine/external"` | **ESM** | **930 B**   | **990 B** |
+| "                                                     |   CJS   | 1.32 KB     | 1.41 KB   |
+| `import * from "@tai-kun/use-state-machine/synced"`   | **ESM** | **1.01 KB** | 1.09 KB   |
+| "                                                     |   CJS   | 1.44 KB     | 1.54 KB   |
+| `import * from "@tai-kun/use-state-machine"`          |   ESM   | 1.29 KB     | 1.39 KB   |
+| "                                                     |   CJS   | 1.73 KB     | 1.86 KB   |
 
 ## Examples
 
@@ -79,7 +79,7 @@ console.log(state); // { value: 'active', nextEvents: ['TOGGLE'] }
 - [useStateMachine](#usestatemachine)
 - [useExternalStateMachine](#useexternalstatemachine)
 - [useSyncedStateMachine](#usesyncedstatemachine)
-- [defineStateMachine](#definestatemachine)
+- [createStateMachine](#createstatemachine)
 
 ## useStateMachine
 
@@ -141,57 +141,44 @@ function App() {
 }
 ```
 
-## defineStateMachine
-
-### without props
+## createStateMachine
 
 Define a state machine to use with `useStateMachine` or `useSyncedStateMachine`.
 
+The machine function is executed only once.
+If you use dynamically changing arguments, you need to mark them as transferable values.
+If there are arguments marked as transferable (by `Transferable`), they must be transferred with the `transfer` function.
+
 ```ts
-const machine = defineStateMachine((create) =>
-  create({
+function machine(staticParam: string, onChange: Transferable<Function>) {
+  return createStateMachine({
     // State Machine Definition
-  })
-);
-
-function App() {
-  const [state, send] = useStateMachine(machine);
-
-  // ...
-}
-```
-
-### with props
-
-Like `defineStateMachine`, but with props.
-
-```ts
-type Props = {
-  onChange(active: boolean): void
-};
-
-const machine = defineStateMachine<Props>()((props, create) =>
-  create({
+    // context: staticParam,
     initial: "inactive",
     states: {
       inactive: {
         on: { TOGGLE: "active" },
         effect() {
-          props.current.onChange(false);
+          onChange.current(false);
         },
       },
       active: {
         on: { TOGGLE: "inactive" },
         effect() {
-          props.current.onChange(true);
+          onChange.current(true);
         },
       },
     },
-  }),
-);
+  });
+}
 
-function App(props: Props) {
-  const [state, send] = useStateMachine(machine, props);
+function App(props) {
+  const someStaticParam = "";
+  const [machineState, send] = useStateMachine(
+    machine,
+    someStaticParam,
+    transfer(props.onChange)
+  );
 
   // ...
 }

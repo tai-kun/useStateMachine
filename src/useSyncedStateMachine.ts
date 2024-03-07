@@ -6,7 +6,7 @@ import {
   processEffect,
 } from "./core/logic";
 import { useEffect, useRef } from "./core/react";
-import type { $$t, A, Machine } from "./core/src";
+import type { $$mt, A, Machine } from "./core/src";
 
 type UseSyncedStateMachine = {
   /**
@@ -99,16 +99,20 @@ type UseSyncedStateMachine = {
    */
   <const M extends Machine.Type>(
     machine: M,
-    ...args: M[typeof $$t]["args"]
-  ): [getState: () => M[typeof $$t]["state"], send: M[typeof $$t]["send"]];
+    ...args: Parameters<M>
+  ): [
+    getState: () => ReturnType<M>[typeof $$mt]["state"],
+    send: ReturnType<M>[typeof $$mt]["send"],
+  ];
 };
 
 type SetStateAction = (state: Machine.State.Impl) => Machine.State.Impl;
 
 function $useSyncedStateMachine(
-  ...args: [Machine.Definition.Impl | Machine.Impl, unknown?]
+  arg0: Machine.Definition.Impl | Machine.Impl,
+  ...args: unknown[]
 ) {
-  const def = useDefinition(...args);
+  const def = useDefinition(arg0, args);
   const exitFnRef = useRef<void | (() => void)>();
   const [reqSync, machineApi] = useSingleton(() => {
     const queue: SetStateAction[] = [];
@@ -222,12 +226,8 @@ export const useSyncedStateMachine =
 export { type UseSyncedStateMachine };
 
 export {
-  defineStateMachine,
-  type SyncedRefObject,
-  type CreateDefinition,
-  type DefineWithoutProps,
-  type DefineWithProps,
-  type DefineStateMachine,
-} from "./defineStateMachine";
+  createStateMachine,
+  type CreateStateMachine,
+} from "./createStateMachine";
 
-export { type t } from "./core/util";
+export { type t, transfer } from "./core/util";
