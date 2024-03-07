@@ -2,7 +2,7 @@
 <img src="https://user-images.githubusercontent.com/33676/111815108-4695b900-88a9-11eb-8b61-3c45b40d4df6.png" width="250" alt=""/>
 </p>
 
-**The <1 kb _state machine_ hook for React:**
+**The <1 KiB _state machine_ hook for React:**
 
 [![Canary Release on NPM](https://github.com/tai-kun/useStateMachine/actions/workflows/canary-release.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/canary-release.yaml)
 [![Release on NPM](https://github.com/tai-kun/useStateMachine/actions/workflows/release.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/release.yaml)
@@ -13,15 +13,18 @@ See the user-facing docs at: [usestatemachine.js.org](https://usestatemachine.js
 
 - Batteries Included: Despite the tiny size, useStateMachine is feature complete (Entry/exit callbacks, Guarded transitions & Extended State - Context)
 - Amazing TypeScript experience: Focus on automatic type inference (auto completion for both TypeScript & JavaScript users without having to manually define the typings) while giving you the option to specify and augment the types for context & events.
-- Made for React: useStateMachine follow idiomatic React patterns you and your team are already familiar with. (The library itself is actually a thin wrapper around React's useReducer & useEffect.)
+- Made for React: useStateMachine follow idiomatic React patterns you and your team are already familiar with. (The library itself is actually a thin wrapper around React's useState & useEffect.)
 
-<div style="display: grid; grid-template-columns: auto 1fr; grid-gap: 10px; color: CanvasText; border: 2px solid currentColor; border-radius: 16px; padding: 16px;">
-  <div style="font-family: monospace; grid-column: span 2;">dist/index.min.mjs</div>
-  <div style="font-family: monospace;">Size limit:</div>
-  <div style="font-family: monospace; color: lightgreen; font-weight: 600;">1 kB</div>
-  <div style="font-family: monospace;">Size:</div>
-  <div style="font-family: monospace;"><span style="; color: lightgreen; font-weight: 600;">763 B</span> with all dependencies, minified and brotlied</div>
-</div>
+| Signature | Format | Size (minified + brotlied) | Size (minified + gzipped) |
+| :-------- | :----: | -------------------------: | ------------------------: |
+| `import * from "@tai-kun/use-state-machine/default"`  | **ESM** | **885 B**   | **958 B**   |
+| "                                                     |   CJS   | 1.29 KB     | 1.39 KB     |
+| `import * from "@tai-kun/use-state-machine/external"` | **ESM** | **924 B**   | **1.01 KB** |
+| "                                                     |   CJS   | 1.34 KB     | 1.44 KB     |
+| `import * from "@tai-kun/use-state-machine/synced"`   | **ESM** | **1.01 KB** | 1.08 KB     |
+| "                                                     |   CJS   | 1.43 KB     | 1.54 KB     |
+| `import * from "@tai-kun/use-state-machine"`          |   ESM   | 1.28 KB     | 1.38 KB     |
+| "                                                     |   CJS   | 1.72 KB     | 1.86 KB     |
 
 ## Examples
 
@@ -37,7 +40,7 @@ npm install @tai-kun/use-state-machine
 
 ## Sample Usage
 
-```typescript
+```ts
 const [state, send] = useStateMachine({
   initial: "inactive",
   states: {
@@ -69,9 +72,14 @@ console.log(state); // { value: 'active', nextEvents: ['TOGGLE'] }
 
 # API
 
-# useStateMachine
+- [useStateMachine](#usestatemachine)
+- [useExternalStateMachine](#useexternalstatemachine)
+- [useSyncedStateMachine](#usesyncedstatemachine)
+- [defineStateMachine](#definestatemachine)
 
-```typescript
+## useStateMachine
+
+```ts
 const [state, send] = useStateMachine(/* State Machine Definition */);
 ```
 
@@ -81,7 +89,7 @@ const [state, send] = useStateMachine(/* State Machine Definition */);
 
 The machine's `state` consists of 4 properties: `value`, `event`, `nextEvents` and `context`.
 
-`value` (string): Returns the name of the current state.
+`value` (`string`): Returns the name of the current state.
 
 `event` (`{type: string}`; Optional): The name of the last sent event that led to this state.
 
@@ -96,6 +104,94 @@ The machine's `state` consists of 4 properties: `value`, `event`, `nextEvents` a
 If the current state accepts this event, and it is allowed (see guard), it will change the state machine state and execute effects.
 
 You can also send additional data with your event using the object notation (e.g. `{ type: "UPDATE" value: 10 }`). Check [schema](#schema-context--event-typing) for more information about strong typing the additional data.
+
+## useExternalStateMachine
+
+Like `useStateMachine`, but uses `React.useSyncExternalStore` instead of `React.useState` to manage state.
+
+```ts
+const machine = createExternalStateMachine({
+  // State Machine Definition
+});
+
+function App() {
+  const [state, send] = useExternalStateMachine(machine);
+
+  // ...
+}
+```
+
+## useSyncedStateMachine
+
+Like `useStateMachine`, but updates state directly instead of `React.useState`.
+Therefore, calling the `send` function **will not trigger a re-render**.
+
+```ts
+function App() {
+  const [getState, send] = useSyncedStateMachine({
+    // State Machine Definition
+  });
+  const state = getState();
+
+  // ...
+}
+```
+
+## defineStateMachine
+
+### without props
+
+Define a state machine to use with `useStateMachine` or `useSyncedStateMachine`.
+
+```ts
+const machine = defineStateMachine((create) =>
+  create({
+    // State Machine Definition
+  })
+);
+
+function App() {
+  const [state, send] = useStateMachine(machine);
+
+  // ...
+}
+```
+
+### with props
+
+Like `defineStateMachine`, but with props.
+
+```ts
+type Props = {
+  onChange(active: boolean): void
+};
+
+const machine = defineStateMachine<Props>()((props, create) =>
+  create({
+    initial: "inactive",
+    states: {
+      inactive: {
+        on: { TOGGLE: "active" },
+        effect() {
+          props.current.onChange(false);
+        },
+      },
+      active: {
+        on: { TOGGLE: "inactive" },
+        effect() {
+          props.current.onChange(true);
+        },
+      },
+    },
+  }),
+);
+
+function App(props: Props) {
+  const [state, send] = useStateMachine(machine, props);
+
+  // ...
+}
+```
 
 # State Machine definition
 
@@ -117,16 +213,16 @@ States are defined with the state name as a key and an object with two possible 
 
 Describes which events this state responds to (and to which other state the machine should transition to when this event is sent):
 
-```typescript
+```ts
 states: {
   inactive: {
     on: {
-      TOGGLE: 'active';
+      TOGGLE: "active";
     }
   },
   active: {
     on: {
-      TOGGLE: 'inactive';
+      TOGGLE: "inactive";
     }
   },
 },
@@ -173,7 +269,7 @@ The guard function receives an object with the current context and the event. Th
 
 Effects are triggered when the state machine enters a given state. If you return a function from your effect, it will be invoked when leaving that state (similarly to how useEffect works in React).
 
-```typescript
+```ts
 const [state, send] = useStateMachine({
   initial: "active",
   states: {
@@ -197,7 +293,7 @@ The effect function receives an object as parameter with four keys:
 
 In this example, the state machine will always send the "RETRY" event when entering the error state:
 
-```typescript
+```ts
 const [state, send] = useStateMachine({
   initial: "loading",
   states: {
@@ -252,7 +348,7 @@ Still, there are situations where you might want explicit control over the `cont
 
 _Typed Context example_
 
-```typescript
+```ts
 const [state, send] = useStateMachine({
   schema: {
     context: t<{ toggleCount: number }>(),
@@ -279,10 +375,10 @@ All events are type-infered by default, both in the string notation (`send("UPDA
 
 If you want, though, you can augment an already typed event to include arbitrary data (which can be useful to provide values to be used inside effects or to update the context). Example:
 
-```typescript
+```ts
 const [machine, send] = useStateMachine({
   schema: {
-    context: t<{ timeout?: number }>(),
+    context: t<{ timeout?: number | undefined }>(),
     events: {
       PING: t<{ value: number }>(),
     },
