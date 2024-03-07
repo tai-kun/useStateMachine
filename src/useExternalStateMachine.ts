@@ -1,7 +1,6 @@
+import { type Dispatchers, useSingleton, useSync } from "./core/hooks";
 import { useEffect, useRef, useSyncExternalStore } from "./core/react";
 import type { Machine } from "./core/src";
-import useSingleton from "./core/useSingleton";
-import useSync, { type Dispatchers } from "./core/useSync";
 
 type UseExternalStateMachine = {
   <const M extends { getState: any; send: any }>(

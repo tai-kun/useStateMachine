@@ -1,9 +1,9 @@
-import type { A, Machine } from "./core/src";
 import type {
   DefineWithPropsImpl,
   DefineWithoutPropsImpl,
-} from "./core/useDefinition";
-import type { SyncedRefObject } from "./core/useSyncedRef";
+  SyncedRefObject,
+} from "./core/hooks";
+import type { A, Machine } from "./core/src";
 
 type CreateDefinition = {
   /**

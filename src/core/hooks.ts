@@ -1,6 +1,7 @@
+import { useRef } from "react";
+import processEffect, { type Dispatchers } from "./processEffect";
+import { useEffect } from "./react";
 import type { Machine } from "./src";
-import useSingleton from "./useSingleton";
-import { type SyncedRefObject, useSyncedRef } from "./useSyncedRef";
 
 export type CreateDefinitionImpl = {
   /**
@@ -56,4 +57,67 @@ export function useDefinition(
         : (arg0.new as DefineWithoutPropsImpl)((d) => d)
       : arg0,
   );
+}
+
+/**
+ * This React hook is used to memoize a value that is expensive to compute.
+ * Similar to `useMemo`, but also does not have a dependency list and is computed only once, the first time.
+ *
+ * @template T The type of the memoized value.
+ * @param compute A function that computes the memoized value.
+ * @returns The memoized value.
+ */
+export function useSingleton<T extends object>(compute: () => T): T {
+  const ref = useRef<T | null>(null);
+
+  if (ref.current === null) {
+    ref.current = compute();
+  }
+
+  return ref.current;
+}
+
+export type { Dispatchers };
+
+/**
+ * A hook that synchronizes a state machine with the component lifecycle.
+ *
+ * @param def State machine definition.
+ * @param state State machine state.
+ * @param dispatchers State machine dispatchers.
+ */
+export function useSync(
+  def: Machine.Definition.Impl,
+  state: Machine.State.Impl,
+  dispatchers: Dispatchers,
+): void {
+  useEffect(
+    () => processEffect(def, state, dispatchers),
+    [state.value, state.event],
+  );
+}
+
+/**
+ * A reference to an object.
+ *
+ * @template T The type of the object.
+ */
+export type SyncedRefObject<T = unknown> = {
+  /**
+   * The current value of the reference.
+   */
+  readonly current: T;
+};
+
+/**
+ * Like `useRef`, but the `current` value is always in sync with the value passed to the hook.
+ *
+ * @param value The initial value of the reference.
+ * @returns A reference to the value.
+ */
+export function useSyncedRef<T>(value: T): SyncedRefObject<T> {
+  const ref = useRef(value);
+  ref.current = value;
+
+  return ref;
 }

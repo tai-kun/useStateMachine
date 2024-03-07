@@ -1,10 +1,9 @@
 import createInitialState from "./core/createInitialState";
+import { useDefinition, useSingleton } from "./core/hooks";
 import processDispatch, { type Action } from "./core/processDispatch";
 import processEffect from "./core/processEffect";
 import { useEffect, useRef } from "./core/react";
 import type { $$t, A, Machine } from "./core/src";
-import { useDefinition } from "./core/useDefinition";
-import useSingleton from "./core/useSingleton";
 
 type UseSyncedStateMachine = {
   /**
