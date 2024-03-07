@@ -70,6 +70,36 @@
   },
   "size-limit": [
     {
+      "path": ".cache/dist/use-state-machine.esm.production.min.js",
+      "limit": "1 KiB",
+      "brotli": true
+    },
+    {
+      "path": ".cache/dist/use-state-machine.cjs.production.min.js",
+      "limit": "1.5 KiB",
+      "brotli": true
+    },
+    {
+      "path": ".cache/dist/use-external-state-machine.esm.production.min.js",
+      "limit": "1 KiB",
+      "brotli": true
+    },
+    {
+      "path": ".cache/dist/use-external-state-machine.cjs.production.min.js",
+      "limit": "1.5 KiB",
+      "brotli": true
+    },
+    {
+      "path": ".cache/dist/use-synced-state-machine.esm.production.min.js",
+      "limit": "1 KiB",
+      "brotli": true
+    },
+    {
+      "path": ".cache/dist/use-synced-state-machine.cjs.production.min.js",
+      "limit": "1.5 KiB",
+      "brotli": true
+    },
+    {
       "path": ".cache/dist/index.esm.production.min.js",
       "limit": "2 KiB",
       "brotli": true
@@ -80,34 +110,36 @@
       "brotli": true
     },
     {
-      "path": ".cache/dist/usestatemachine.esm.production.min.js",
-      "limit": "1 KiB",
-      "brotli": true
+      "path": ".cache/dist/use-state-machine.esm.production.min.js",
+      "gzip": true
     },
     {
-      "path": ".cache/dist/usestatemachine.cjs.production.min.js",
-      "limit": "1.5 KiB",
-      "brotli": true
+      "path": ".cache/dist/use-state-machine.cjs.production.min.js",
+      "gzip": true
     },
     {
-      "path": ".cache/dist/useexternalstatemachine.esm.production.min.js",
-      "limit": "1 KiB",
-      "brotli": true
+      "path": ".cache/dist/use-external-state-machine.esm.production.min.js",
+      "gzip": true
     },
     {
-      "path": ".cache/dist/useexternalstatemachine.cjs.production.min.js",
-      "limit": "1.5 KiB",
-      "brotli": true
+      "path": ".cache/dist/use-external-state-machine.cjs.production.min.js",
+      "gzip": true
     },
     {
-      "path": ".cache/dist/usesyncedstatemachine.esm.production.min.js",
-      "limit": "1 KiB",
-      "brotli": true
+      "path": ".cache/dist/use-synced-state-machine.esm.production.min.js",
+      "gzip": true
     },
     {
-      "path": ".cache/dist/usesyncedstatemachine.cjs.production.min.js",
-      "limit": "1.5 KiB",
-      "brotli": true
+      "path": ".cache/dist/use-synced-state-machine.cjs.production.min.js",
+      "gzip": true
+    },
+    {
+      "path": ".cache/dist/index.esm.production.min.js",
+      "gzip": true
+    },
+    {
+      "path": ".cache/dist/index.cjs.production.min.js",
+      "gzip": true
     }
   ],
   "volta": {

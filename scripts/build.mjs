@@ -138,7 +138,10 @@ function toBundleOptions(format, name) {
     // Output location
 
     write: true,
-    outfile: `.cache/dist/${name.toLowerCase()}.${format}.production.min.js`,
+    outfile: `.cache/dist/${
+      // camelCase to kebab-case
+      name.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
+    }.${format}.production.min.js`,
 
     // Optimization
 
