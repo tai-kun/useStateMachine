@@ -67,6 +67,13 @@ import { type $$t, $$tf, type Transfer } from "./src";
  */
 export type t<T> = { [$$t]: T };
 
+/**
+ * Transfers a value to a state machine.
+ *
+ * @template T The type of the value.
+ * @param value The value to transfer.
+ * @returns The value with a transfer marker.
+ */
 export function transfer<T>(value: T): Transfer<T> {
   return {
     current: value,

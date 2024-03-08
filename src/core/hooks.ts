@@ -3,6 +3,12 @@ import { type Dispatchers, processEffect } from "./logic";
 import { useEffect, useInsertionEffect } from "./react";
 import { $$tf, type Machine, type Transfer } from "./src";
 
+/**
+ * Checks if a value is a transferable value.
+ *
+ * @param value The value to check.
+ * @returns `true` if the value is a transferable value, otherwise `false`.
+ */
 export function isTransfer(value: unknown): value is Transfer {
   return typeof value === "object" && value !== null && $$tf in value;
 }
@@ -93,6 +99,11 @@ export function useSyncedRef<T>(value: T): SyncedRefObject<T> {
 const useIsomorphicInsertionEffect =
   typeof document === "undefined" ? useEffect : useInsertionEffect;
 
+/**
+ * A hook that returns whether the component is mounted.
+ *
+ * @returns A reference to a boolean that is `true` if the component is mounted, otherwise `false`.
+ */
 export function useIsMounted(): { readonly current: boolean } {
   const isMounted = useRef(true);
 
