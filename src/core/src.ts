@@ -1336,15 +1336,15 @@ export namespace A {
   /**
    * Returns a custom error type.
    * 
-   * @template Error The error type.
+   * @template Err The error type.
    * @template Place The place where the error occurred.
    */
-  export type CustomError<Error, Place> =
-    Place extends (S.IsLiteral<Place> extends true ? Error : A.String)
-      ? Place extends `${S.Assert<Error>} `
-          ? Error
-          : `${S.Assert<Error>} `
-      : Error
+  export type CustomError<Err, Place> =
+    Place extends (S.IsLiteral<Place> extends true ? Err : A.String)
+      ? Place extends `${S.Assert<Err>} `
+          ? Err
+          : `${S.Assert<Err>} `
+      : Err
 
   /**
    * Branded type.
