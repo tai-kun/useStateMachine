@@ -362,7 +362,7 @@ export namespace Machine {
       EventsSchema = A.Get<D, ["schema", "events"], {}>,
       EventTypeConstraint =
         A.Get<EventsSchema, ExhaustiveIdentifier, false> extends true
-          ? U.Exclude<keyof EventsSchema, ExhaustiveIdentifier>
+          ? Exclude<keyof EventsSchema, ExhaustiveIdentifier>
           : A.String
     > = {
       [EventType in keyof Self]:
@@ -428,7 +428,7 @@ export namespace Machine {
           guard?: (
             parameter: {
               context: Machine.Context<D>
-              event: U.Extract<Machine.Event<D>, Event>
+              event: Extract<Machine.Event<D>, Event>
             }
           ) => boolean
         };
@@ -733,7 +733,7 @@ export namespace Machine {
     EventsSchema = A.Get<D, ["schema", "events"], {}>
   > = 
     | O.Value<{
-        [T in U.Exclude<keyof EventsSchema, Definition.ExhaustiveIdentifier>]:
+        [T in Exclude<keyof EventsSchema, Definition.ExhaustiveIdentifier>]:
           // if (the event schema is valid) {
           //   return the event
           // } else {
@@ -827,7 +827,7 @@ export namespace Machine {
           never
         )
       )
-    | U.Extract<
+    | Extract<
         Event<D>,
         {
           type:
@@ -877,7 +877,7 @@ export namespace Machine {
    * @template StateValue The state value.
    */
   export type ExitEventForStateValue<D, StateValue> =
-    U.Extract<
+    Extract<
       Machine.Event<D>,
       {
         type:
@@ -936,13 +936,13 @@ export namespace Machine {
      * 
      * @param sendable The event to send to the state machine.
      */
-    (sendable: U.Exclude<Sendable<D>, A.String>): void
+    (sendable: Exclude<Sendable<D>, A.String>): void
     /**
      * Sends an event to the state machine.
      * 
      * @param sendable The event to send to the state machine.
      */
-    (sendable: U.Extract<Sendable<D>, A.String>): void
+    (sendable: Extract<Sendable<D>, A.String>): void
   };
 
   /**
@@ -1156,27 +1156,6 @@ export namespace S {
           ? false
           : true
       : false;
-}
-
-/**
- * Collections of general type utilities.
- */
-export namespace U {
-  /**
-   * Extract from `T` those types that are assignable to `U`.
-   * 
-   * @template T The type to extract from.
-   * @template U The type to extract.
-   */
-  export type Extract<T, U> = T extends U ? T : never;
-
-  /**
-   * Exclude from `T` those types that are assignable to `U`.
-   * 
-   * @template T The type to exclude from.
-   * @template U The type to exclude.
-   */
-  export type Exclude<T, U> = T extends U ? never : T;
 }
 
 /**
