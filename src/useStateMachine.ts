@@ -246,11 +246,10 @@ type UseStateMachine = {
    *
    * function App(props) {
    *   const someStaticParam = "";
-   *   const [state, send] = useStateMachine(
-   *     machine,
+   *   const [getState, send] = useStateMachine(machine, [
    *     someStaticParam,
    *     transfer(props.onChange)
-   *   );
+   *   ]);
    *
    *   // ...
    * }
@@ -264,8 +263,9 @@ type UseStateMachine = {
    * - The second element is a function that sends an event to the machine.
    */
   <const M extends Machine.Type>(
-    machine: M,
-    ...args: Parameters<M>
+    ...args: Parameters<M>["length"] extends 0
+      ? [machine: M, args?: undefined | []]
+      : [machine: M, args: Parameters<M>]
   ): [
     state: ReturnType<M>[typeof $$mt]["state"],
     send: ReturnType<M>[typeof $$mt]["send"],
@@ -274,7 +274,7 @@ type UseStateMachine = {
 
 function $useStateMachine(
   arg0: Machine.Definition.Impl | Machine.Impl,
-  ...args: unknown[]
+  args: unknown[] | undefined = [],
 ) {
   const def = useDefinition(arg0, args);
   const isMounted = useIsMounted();

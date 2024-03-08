@@ -71,11 +71,10 @@ type UseSyncedStateMachine = {
    *
    * function App(props) {
    *   const someStaticParam = "";
-   *   const [getState, send] = useSyncedStateMachine(
-   *     machine,
+   *   const [getState, send] = useSyncedStateMachine(machine, [
    *     someStaticParam,
    *     transfer(props.onChange)
-   *   );
+   *   ]);
    *
    *   // ...
    * }
@@ -89,8 +88,9 @@ type UseSyncedStateMachine = {
    * - The second element is a function that sends an event to the machine.
    */
   <const M extends Machine.Type>(
-    machine: M,
-    ...args: Parameters<M>
+    ...args: Parameters<M>["length"] extends 0
+      ? [machine: M, args?: undefined | []]
+      : [machine: M, args: Parameters<M>]
   ): [
     getState: () => ReturnType<M>[typeof $$mt]["state"],
     send: ReturnType<M>[typeof $$mt]["send"],
@@ -101,7 +101,7 @@ type SetStateAction = (state: Machine.State.Impl) => Machine.State.Impl;
 
 function $useSyncedStateMachine(
   arg0: Machine.Definition.Impl | Machine.Impl,
-  ...args: unknown[]
+  args: unknown[] | undefined = [],
 ) {
   const def = useDefinition(arg0, args);
   const isMounted = useIsMounted();
