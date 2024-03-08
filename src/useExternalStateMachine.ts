@@ -1,5 +1,10 @@
-import { type Dispatchers, useSingleton, useSync } from "./core/hooks";
-import { useEffect, useRef, useSyncExternalStore } from "./core/react";
+import {
+  type Dispatchers,
+  useIsMounted,
+  useSingleton,
+  useSync,
+} from "./core/hooks";
+import { useSyncExternalStore } from "./core/react";
 import type { Machine } from "./core/src";
 
 type UseExternalStateMachine = {
@@ -9,16 +14,7 @@ type UseExternalStateMachine = {
 };
 
 function $useExternalStateMachine(machine: Machine.External.Impl) {
-  const isMounted = useRef(false);
-
-  useEffect(() => {
-    isMounted.current = true;
-
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
+  const isMounted = useIsMounted();
   const state = useSyncExternalStore(
     machine.subscribe,
     machine.getState,

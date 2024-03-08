@@ -1,6 +1,7 @@
 import {
   type Dispatchers,
   useDefinition,
+  useIsMounted,
   useSingleton,
   useSync,
 } from "./core/hooks";
@@ -276,10 +277,13 @@ function $useStateMachine(
   ...args: unknown[]
 ) {
   const def = useDefinition(arg0, args);
+  const isMounted = useIsMounted();
   const [state, setState] = useState(() => createInitialState(def));
   const dispatchers = useSingleton<Dispatchers>(() => {
     function dispatch(action: Action) {
-      setState((currentState) => processDispatch(def, currentState, action));
+      if (isMounted.current) {
+        setState((currentState) => processDispatch(def, currentState, action));
+      }
     }
 
     function send(sendable: Machine.Sendable.Impl) {

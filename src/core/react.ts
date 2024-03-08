@@ -1,1 +1,7 @@
-export { useEffect, useRef, useState, useSyncExternalStore } from "react";
+export {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  useInsertionEffect,
+} from "react";

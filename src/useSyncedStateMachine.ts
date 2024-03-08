@@ -1,4 +1,4 @@
-import { useDefinition, useSingleton } from "./core/hooks";
+import { useDefinition, useIsMounted, useSingleton } from "./core/hooks";
 import {
   type Action,
   createInitialState,
@@ -104,6 +104,7 @@ function $useSyncedStateMachine(
   ...args: unknown[]
 ) {
   const def = useDefinition(arg0, args);
+  const isMounted = useIsMounted();
   const exitFnRef = useRef<void | (() => void)>();
   const [reqSync, machineApi] = useSingleton(() => {
     const queue: SetStateAction[] = [];
@@ -135,8 +136,10 @@ function $useSyncedStateMachine(
      * @param action The action to dispatch to the state machine.
      */
     function dispatch(action: Action) {
-      // `queue.push` means `React.useState`
-      queue.push((currentState) => processDispatch(def, currentState, action));
+      if (isMounted.current) {
+        // `queue.push` means `React.useState`
+        queue.push((state) => processDispatch(def, state, action));
+      }
     }
 
     /**

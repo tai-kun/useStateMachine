@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { type Dispatchers, processEffect } from "./logic";
-import { useEffect } from "./react";
+import { useEffect, useInsertionEffect } from "./react";
 import { $$tf, type Machine, type Transfer } from "./src";
 
 export function isTransfer(value: unknown): value is Transfer {
@@ -88,4 +88,24 @@ export function useSyncedRef<T>(value: T): SyncedRefObject<T> {
   ref.current = value;
 
   return ref;
+}
+
+const useIsomorphicInsertionEffect =
+  typeof document === "undefined" ? useEffect : useInsertionEffect;
+
+export function useIsMounted(): { readonly current: boolean } {
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+  }, []);
+
+  useIsomorphicInsertionEffect(
+    () => () => {
+      isMounted.current = false;
+    },
+    [],
+  );
+
+  return isMounted;
 }
