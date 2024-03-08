@@ -32,7 +32,7 @@ export type Transfer<T = unknown> = {
   /**
    * ! Do not remove this property.
    */
-  [$$tf]: never;
+  readonly [$$tf]: never;
 };
 
 /* -----------------------------------------------------------------------------

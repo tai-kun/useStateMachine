@@ -283,6 +283,11 @@ function $useStateMachine(
     function dispatch(action: Action) {
       if (isMounted.current) {
         setState((currentState) => processDispatch(def, currentState, action));
+      } else if (__DEV__) {
+        console.warn(
+          "Tried to dispatch an action to an unmounted state machine.",
+          action,
+        );
       }
     }
 

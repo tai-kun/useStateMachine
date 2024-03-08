@@ -75,8 +75,8 @@ export type t<T> = { [$$t]: T };
  * @returns The value with a transfer marker.
  */
 export function transfer<T>(value: T): Transfer<T> {
-  return {
+  return Object.freeze({
     current: value,
     [$$tf]: 0 as never,
-  };
+  });
 }

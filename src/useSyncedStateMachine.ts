@@ -139,6 +139,11 @@ function $useSyncedStateMachine(
       if (isMounted.current) {
         // `queue.push` means `React.useState`
         queue.push((state) => processDispatch(def, state, action));
+      } else if (__DEV__) {
+        console.warn(
+          "Tried to dispatch an action to an unmounted state machine.",
+          action,
+        );
       }
     }
 

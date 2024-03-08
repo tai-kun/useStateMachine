@@ -45,6 +45,11 @@ function $useExternalStateMachine(machine: Machine.External.Impl) {
     function send(sendable: Machine.Sendable.Impl) {
       if (isMounted.current) {
         machine.send(sendable);
+      } else if (__DEV__) {
+        console.warn(
+          "Tried to send an event to an unmounted state machine.",
+          sendable,
+        );
       }
     }
 
@@ -53,6 +58,11 @@ function $useExternalStateMachine(machine: Machine.External.Impl) {
       setContext(updater) {
         if (isMounted.current) {
           machine.setContext(updater);
+        } else if (__DEV__) {
+          console.warn(
+            "Tried to set context an event to an unmounted state machine.",
+            updater,
+          );
         }
 
         return { send };

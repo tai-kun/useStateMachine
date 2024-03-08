@@ -24,6 +24,35 @@ export function useDefinition(
   arg0: Machine.Definition.Impl | Machine.Impl,
   args: unknown[],
 ) {
+  if (__DEV__) {
+    const ref = useRef<unknown[]>();
+
+    if (ref.current) {
+      if (ref.current.length !== args.length) {
+        throw new Error(
+          "The number of arguments passed to state machine must not change.",
+        );
+      }
+
+      ref.current.forEach((arg, i) => {
+        if (isTransfer(arg) !== isTransfer(args[i])) {
+          throw new Error(
+            [
+              "A state machine hook is changing ",
+              `from a ${isTransfer(arg) ? "" : "non-"}transferable value `,
+              `to a ${isTransfer(args[i]) ? "" : "non-"}transferable value `,
+              `at index ${i} of the argument list.`,
+              "Each transferable argument is transferred by useRef, ",
+              "so their order and number cannot be changed.",
+            ].join(""),
+          );
+        }
+      });
+    } else {
+      ref.current = args;
+    }
+  }
+
   const params = args.map((arg) =>
     isTransfer(arg) ? useSyncedRef(arg.current) : arg,
   );
