@@ -1,8 +1,10 @@
 {
   "name": "@tai-kun/use-state-machine",
   "version": "0.0.0",
+  "description": "The <1 KiB state machine hook for React",
   "license": "MIT",
   "author": "Cassio Zen",
+  "repository": "git+https://github.com/tai-kun/useStateMachine.git",
   "sideEffects": false,
   "files": [
     "dist",
