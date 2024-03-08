@@ -211,7 +211,7 @@ export namespace Machine {
               // } else {
               //   throw an error
               // }
-              StateIdentifier extends A.String ? (
+              StateIdentifier extends A.Str ? (
                 Definition.StateNode<Self, ["states", StateIdentifier]>
               ) : (
                 A.CustomError<
@@ -363,7 +363,7 @@ export namespace Machine {
       EventTypeConstraint =
         A.Get<EventsSchema, ExhaustiveIdentifier, false> extends true
           ? Exclude<keyof EventsSchema, ExhaustiveIdentifier>
-          : A.String
+          : A.Str
     > = {
       [EventType in keyof Self]:
         // if (the event type is not a string) {
@@ -377,7 +377,7 @@ export namespace Machine {
         // } else {
         //   return the transition
         // }
-        A.DoesExtend<EventType, A.String> extends false ? (
+        A.DoesExtend<EventType, A.Str> extends false ? (
           A.CustomError<"Error: only string types allowed", A.Get<Self, EventType>>
         ) : EventType extends ExhaustiveIdentifier ? (
           A.CustomError<
@@ -643,7 +643,7 @@ export namespace Machine {
             A.CustomError<
               `Error: '${Definition.InitialEventType}' is a reserved type`,
               A.Get<EventsSchema, Type>>
-          ) : A.DoesExtend<Type, A.String> extends false ? (
+          ) : A.DoesExtend<Type, A.Str> extends false ? (
             A.CustomError<
               "Error: Only string types allowed",
               A.Get<EventsSchema, Type>>
@@ -840,7 +840,7 @@ export namespace Machine {
                     //   return never
                     // }
                     A.Get<D, ["states", S, "on", E]> extends infer T ? (
-                      (T extends A.String ? T : A.Get<T, "target">) extends StateValue ? (
+                      (T extends A.Str ? T : A.Get<T, "target">) extends StateValue ? (
                         E
                       ) : (
                         never
@@ -858,7 +858,7 @@ export namespace Machine {
                   //   return never
                   // }
                   A.Get<D, ["on", E]> extends infer T ? (
-                    (T extends A.String ? T : A.Get<T, "target">) extends StateValue ? (
+                    (T extends A.Str ? T : A.Get<T, "target">) extends StateValue ? (
                       E
                     ) : (
                       never
@@ -936,13 +936,13 @@ export namespace Machine {
      * 
      * @param sendable The event to send to the state machine.
      */
-    (sendable: Exclude<Sendable<D>, A.String>): void
+    (sendable: Exclude<Sendable<D>, A.Str>): void
     /**
      * Sends an event to the state machine.
      * 
      * @param sendable The event to send to the state machine.
      */
-    (sendable: Extract<Sendable<D>, A.String>): void
+    (sendable: Extract<Sendable<D>, A.Str>): void
   };
 
   /**
@@ -1143,7 +1143,7 @@ export namespace S {
    * 
    * @template T The type to assert.
    */
-  export type Assert<T> = A.Cast<T, A.String>;
+  export type Assert<T> = A.Cast<T, A.Str>;
 
   /**
    * Returns `true` if the type is a literal string, `false` otherwise.
@@ -1151,8 +1151,8 @@ export namespace S {
    * @template T The type to check.
    */
   export type IsLiteral<T> =
-    T extends A.String
-      ? A.String extends T
+    T extends A.Str
+      ? A.Str extends T
           ? false
           : true
       : false;
@@ -1196,17 +1196,17 @@ export namespace A {
   /**
    * Object type.
    */
-  export type Object = object;
+  export type Obj = object;
 
   /**
    * String type.
    */
-  export type String = string;
+  export type Str = string;
 
   /**
    * Function type.
    */
-  export type Function = (...args: any[]) => any;
+  export type Func = (...args: any) => any;
 
   /**
    * Infer the narrowest type of `T`.
@@ -1216,9 +1216,9 @@ export namespace A {
   export type InferNarrowest<T> =
     T extends any
       ? (
-          T extends A.Function ? T :
+          T extends A.Func ? T :
           T extends { [$$t]: unknown } ? T :
-          T extends A.Object ? InferNarrowestObject<T> :
+          T extends A.Obj ? InferNarrowestObject<T> :
           T
         )
       : never
@@ -1269,8 +1269,8 @@ export namespace A {
    * @template T The type to check.
    */
   export type IsPlainObject<T> =
-    T extends A.Object
-      ? T extends A.Function ? false :
+    T extends A.Obj
+      ? T extends A.Func ? false :
         T extends A.Tuple ? false :
         true
       : false
@@ -1319,7 +1319,7 @@ export namespace A {
    * @template Place The place where the error occurred.
    */
   export type CustomError<Err, Place> =
-    Place extends (S.IsLiteral<Place> extends true ? Err : A.String)
+    Place extends (S.IsLiteral<Place> extends true ? Err : A.Str)
       ? Place extends `${S.Assert<Err>} `
           ? Err
           : `${S.Assert<Err>} `
@@ -1330,7 +1330,7 @@ export namespace A {
    * 
    * @template N The brand name.
    */
-  export type Tag<N extends A.String> = { [_ in N]: void }
+  export type Tag<N extends A.Str> = { [_ in N]: void }
 
   export const test = (_o: true) => {};
   export const areEqual = <A, B>(_debug?: (value: A) => void) => undefined as any as A.AreEqual<A, B>
