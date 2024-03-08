@@ -21,14 +21,14 @@ See the user-facing docs at: [usestatemachine.js.org](https://usestatemachine.js
 
 | Signature | Format | Size (minified + brotlied) | Size (minified + gzipped) |
 | :-------- | :----: | -------------------------: | ------------------------: |
-| `import * from "@tai-kun/use-state-machine/default"`  | **ESM** | **897 B**   | **964 B** |
-| "                                                     |   CJS   | 1.3  KB     | 1.39 KB   |
-| `import * from "@tai-kun/use-state-machine/external"` | **ESM** | **930 B**   | **990 B** |
-| "                                                     |   CJS   | 1.32 KB     | 1.41 KB   |
-| `import * from "@tai-kun/use-state-machine/synced"`   | **ESM** | **1.01 KB** | 1.09 KB   |
-| "                                                     |   CJS   | 1.44 KB     | 1.54 KB   |
-| `import * from "@tai-kun/use-state-machine"`          |   ESM   | 1.29 KB     | 1.39 KB   |
-| "                                                     |   CJS   | 1.73 KB     | 1.86 KB   |
+| `import * from "@tai-kun/use-state-machine/default"`  | **ESM** | **982 B**   | 1.04 KB   |
+| "                                                     |   CJS   | 1.37  KB    | 1.47 KB   |
+| `import * from "@tai-kun/use-state-machine/external"` | **ESM** | **950 B**   | 1.03 KB   |
+| "                                                     |   CJS   | 1.34 KB     | 1.45 KB   |
+| `import * from "@tai-kun/use-state-machine/synced"`   |   ESM   | 1.09 KB     | 1.17 KB   |
+| "                                                     |   CJS   | 1.51 KB     | 1.62 KB   |
+| `import * from "@tai-kun/use-state-machine"`          |   ESM   | 1.35 KB     | 1.45 KB   |
+| "                                                     |   CJS   | 1.77 KB     | 1.91 KB   |
 
 ## Examples
 
