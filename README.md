@@ -174,11 +174,10 @@ function machine(staticParam: string, onChange: Transfer<Function>) {
 
 function App(props) {
   const someStaticParam = "";
-  const [machineState, send] = useStateMachine(
-    machine,
+  const [machineState, send] = useStateMachine(machine, [
     someStaticParam,
     transfer(props.onChange)
-  );
+  ]);
 
   // ...
 }
