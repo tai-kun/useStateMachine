@@ -86,4 +86,4 @@ export {
 } from "./createExternalStateMachine";
 
 export { type t } from "./core/util";
-export type { Machine } from "./core/src";
+export type { Machine, InferSend, InferState } from "./core/src";

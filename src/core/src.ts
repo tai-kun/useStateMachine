@@ -35,6 +35,26 @@ export type Transfer<T = unknown> = {
   readonly [$$tf]: never;
 };
 
+/**
+ * @template T The type of the state-machine definition, state-machine, or external state-machine.
+ */
+export type InferState<T> =
+  T extends (...args: any) => { def: infer D } // createStateMachine
+    ? Machine.State<Machine.Definition.FromTypeParamter<D>>
+    : T extends { def: infer D } // createExternalStateMachine
+      ? Machine.State<Machine.Definition.FromTypeParamter<D>>
+      : Machine.State<Machine.Definition.FromTypeParamter<T>>
+
+/**
+ * @template T The type of the state-machine definition, state-machine, or external state-machine.
+ */
+export type InferSend<T> =
+  T extends (...args: any) => { def: infer D } // createStateMachine
+    ? Machine.Send<Machine.Definition.FromTypeParamter<D>>
+    : T extends { def: infer D } // createExternalStateMachine
+      ? Machine.Send<Machine.Definition.FromTypeParamter<D>>
+      : Machine.Send<Machine.Definition.FromTypeParamter<T>>
+
 /* -----------------------------------------------------------------------------
  *
  * See https://github.com/cassiozen/useStateMachine/blob/main/src/types.ts
