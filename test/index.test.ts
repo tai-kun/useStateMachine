@@ -6,7 +6,7 @@ import {
   type UseStateMachine,
   createExternalStateMachine,
   createStateMachine,
-  t,
+  type t,
   useExternalStateMachine,
   useStateMachine,
   useSyncedStateMachine,

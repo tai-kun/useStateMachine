@@ -3,14 +3,14 @@ import type { Machine } from "../src/core/src";
 import { A, type LS } from "../src/core/src";
 import type { t } from "../src/core/util";
 
-const useStateMachine = (() => []) as any as {
-  <const D extends Machine.Definition<D>>(
-    definition: A.InferNarrowestObject<D>,
-  ): [
-    state: Machine.State<Machine.Definition.FromTypeParamter<D>>,
-    send: Machine.Send<Machine.Definition.FromTypeParamter<D>>,
-  ];
-};
+const useStateMachine = (() => []) as any as <
+  const D extends Machine.Definition<D>,
+>(
+  definition: A.InferNarrowestObject<D>,
+) => [
+  state: Machine.State<Machine.Definition.FromTypeParamter<D>>,
+  send: Machine.Send<Machine.Definition.FromTypeParamter<D>>,
+];
 
 const query = () =>
   (global as any).twoSlashQueries.shift() as {

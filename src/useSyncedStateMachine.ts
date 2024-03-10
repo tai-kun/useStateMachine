@@ -222,7 +222,7 @@ function $useSyncedStateMachine(
 export const useSyncedStateMachine =
   $useSyncedStateMachine as unknown as UseSyncedStateMachine;
 
-export { type UseSyncedStateMachine };
+export type { UseSyncedStateMachine };
 
 export {
   createStateMachine,

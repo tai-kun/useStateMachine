@@ -318,7 +318,7 @@ function $useStateMachine(
 
 export const useStateMachine = $useStateMachine as unknown as UseStateMachine;
 
-export { type UseStateMachine };
+export type { UseStateMachine };
 
 export {
   createStateMachine,

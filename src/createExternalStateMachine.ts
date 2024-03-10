@@ -1,30 +1,28 @@
 import { type Action, createInitialState, processDispatch } from "./core/logic";
 import type { A, Machine } from "./core/src";
 
-type CreateExternalStateMachine = {
-  /**
-   * Creates a external state machine object.
-   *
-   * ```ts
-   * const machine = createExternalStateMachine({
-   *   // State Machine Definition
-   * });
-   *
-   * function App() {
-   *   const [machineState, send] = useExternalStateMachine(machine);
-   *
-   *   // ...
-   * }
-   * ```
-   *
-   * @template D The type of the state machine definition.
-   * @param definition The state machine definition.
-   * @returns A external state machine object.
-   */
-  <const D extends Machine.Definition<D>>(
-    definition: A.InferNarrowestObject<D>,
-  ): Machine.External<D>;
-};
+/**
+ * Creates a external state machine object.
+ *
+ * ```ts
+ * const machine = createExternalStateMachine({
+ *   // State Machine Definition
+ * });
+ *
+ * function App() {
+ *   const [machineState, send] = useExternalStateMachine(machine);
+ *
+ *   // ...
+ * }
+ * ```
+ *
+ * @template D The type of the state machine definition.
+ * @param definition The state machine definition.
+ * @returns A external state machine object.
+ */
+type CreateExternalStateMachine = <const D extends Machine.Definition<D>>(
+  definition: A.InferNarrowestObject<D>,
+) => Machine.External<D>;
 
 function $createExternalStateMachine(
   def: Machine.Definition.Impl,
@@ -76,4 +74,4 @@ function $createExternalStateMachine(
 export const createExternalStateMachine =
   $createExternalStateMachine as unknown as CreateExternalStateMachine;
 
-export { type CreateExternalStateMachine };
+export type { CreateExternalStateMachine };
