@@ -232,15 +232,15 @@ export namespace Machine {
               //   throw an error
               // }
               StateIdentifier extends A.Str ? (
-                Definition.StateNode<Self, ["states", StateIdentifier]>
+                Machine.Definition.StateNode<Self, ["states", StateIdentifier]>
               ) : (
                 A.CustomError<
                   "Error: Only string identifiers allowed",
                   States[StateIdentifier]>
               )
           }
-        on?: Definition.On<Self, ["on"]>
-        schema?: Definition.Schema<Self, ["schema"]>
+        on?: Machine.Definition.On<Self, ["on"]>
+        schema?: Machine.Definition.Schema<Self, ["schema"]>
         verbose?: boolean
         console?: ConsoleInterface
         $$internalIsConstraint?:
@@ -279,15 +279,15 @@ export namespace Machine {
       /**
        * The initial state value.
        */
-      initial: StateValue.Impl
+      initial: Machine.StateValue.Impl
       /**
        * The state machine states.
        */
-      states: R.Of<StateValue.Impl, Definition.StateNode.Impl>
+      states: R.Of<Machine.StateValue.Impl, Machine.Definition.StateNode.Impl>
       /**
        * The state machine transitions.
        */
-      on?: Definition.On.Impl
+      on?: Machine.Definition.On.Impl
       /**
        * The state machine schema.
        * This property is used only for type inference.
@@ -300,7 +300,7 @@ export namespace Machine {
         /**
          * The state machine events schema.
          */
-        events?: R.Of<Event.Impl["type"], null>
+        events?: R.Of<Machine.Event.Impl["type"], null>
       }
       /**
        * A boolean indicating whether logging is enabled.
@@ -313,7 +313,7 @@ export namespace Machine {
       /**
        * The state machine context.
        */
-      context?: Context.Impl
+      context?: Machine.Context.Impl
     };
 
     /**
@@ -325,7 +325,7 @@ export namespace Machine {
       // TODO(tai-kun): Check whether "$$internalIsConstraint" is a really necessary property.
       "$$internalIsConstraint" extends keyof D ? (
         D extends infer X ? (
-          X extends Definition<infer X> ? (
+          X extends Machine.Definition<infer X> ? (
             X
           ) : (
             never
@@ -344,7 +344,7 @@ export namespace Machine {
      * @template P The path to the state node from the root of the state machine definition.
      */
     export type StateNode<D, P> = {
-      on?: On<D, L.Concat<P, ["on"]>>
+      on?: Machine.Definition.On<D, L.Concat<P, ["on"]>>
       effect?: Effect<D, L.Concat<P, ["effect"]>>
     };
 
@@ -359,11 +359,11 @@ export namespace Machine {
         /**
          * The state machine transitions.
          */
-        on?: On.Impl
+        on?: Machine.Definition.On.Impl
         /**
          * A side effect function that should be executed when transitioning to the current state.
          */
-        effect?: Effect.Impl
+        effect?: Machine.Definition.Effect.Impl
       };
     }
 
@@ -381,8 +381,8 @@ export namespace Machine {
       Self = A.Get<D, P>,
       EventsSchema = A.Get<D, ["schema", "events"], {}>,
       EventTypeConstraint =
-        A.Get<EventsSchema, ExhaustiveIdentifier, false> extends true
-          ? Exclude<keyof EventsSchema, ExhaustiveIdentifier>
+        A.Get<EventsSchema, Machine.Definition.ExhaustiveIdentifier, false> extends true
+          ? Exclude<keyof EventsSchema, Machine.Definition.ExhaustiveIdentifier>
           : A.Str
     > = {
       [EventType in keyof Self]:
@@ -399,13 +399,13 @@ export namespace Machine {
         // }
         A.DoesExtend<EventType, A.Str> extends false ? (
           A.CustomError<"Error: only string types allowed", A.Get<Self, EventType>>
-        ) : EventType extends ExhaustiveIdentifier ? (
+        ) : EventType extends Machine.Definition.ExhaustiveIdentifier ? (
           A.CustomError<
-            `Error: '${ExhaustiveIdentifier}' is a reserved name`,
+            `Error: '${Machine.Definition.ExhaustiveIdentifier}' is a reserved name`,
             A.Get<Self, EventType>>
-        ) : EventType extends InitialEventType ? (
+        ) : EventType extends Machine.Definition.InitialEventType ? (
           A.CustomError<
-            `Error: '${InitialEventType}' is a reserved type`,
+            `Error: '${Machine.Definition.InitialEventType}' is a reserved type`,
             A.Get<Self, EventType>>
         ) : A.DoesExtend<EventType, EventTypeConstraint> extends false ? (
           A.CustomError<
@@ -426,7 +426,7 @@ export namespace Machine {
       /**
        * Transitions in the state machine definition for internal usage.
        */
-      export type Impl = R.Of<Event.Impl["type"], Transition.Impl>;
+      export type Impl = R.Of<Machine.Event.Impl["type"], Machine.Definition.Transition.Impl>;
     }
 
     /**
@@ -461,19 +461,19 @@ export namespace Machine {
        * A transition in the state machine definition for internal usage.
        */
       export type Impl =
-        | State.Impl["value"]
+        | Machine.State.Impl["value"]
         | {
             /**
              * The target state value.
              */
-            target: State.Impl["value"]
+            target: Machine.State.Impl["value"]
             /**
              * A guard function that should return a boolean indicating whether the transition should be taken.
              */
             guard?: (
               parameter: {
-                context: State.Impl["context"]
-                event: State.Impl["event"]
+                context: Machine.State.Impl["context"]
+                event: Machine.State.Impl["event"]
               }
             ) => boolean
           };
@@ -542,7 +542,7 @@ export namespace Machine {
          * @template StateValue The state value.
          */
         export interface ForStateValue<D, StateValue>
-          extends Base<D> {
+          extends Machine.Definition.Effect.Parameter.Base<D> {
           /**
            * The event that triggered the effect.
            */
@@ -556,19 +556,19 @@ export namespace Machine {
           /**
            * The send function to send an event to the state machine.
            */
-          send: Send.Impl
+          send: Machine.Send.Impl
           /**
            * The event that triggered the effect.
            */
-          event: Event.Impl
+          event: Machine.Event.Impl
           /**
            * The current context of the state machine.
            */
-          context: Context.Impl
+          context: Machine.Context.Impl
           /**
            * The function to update the context of the state machine.
            */
-          setContext: SetContext.Impl
+          setContext: Machine.SetContext.Impl
         }
 
         /**
@@ -581,7 +581,8 @@ export namespace Machine {
            * @template D The type of the state machine definition.
            * @template StateValue The state value.
            */
-          export interface ForStateValue<D, StateValue> extends Base<D> {
+          export interface ForStateValue<D, StateValue>
+            extends Machine.Definition.Effect.Parameter.Base<D> {
             /**
              * The event that triggered the cleanup effect.
              */
@@ -595,19 +596,19 @@ export namespace Machine {
             /**
              * The send function to send an event to the state machine.
              */
-            send: Send.Impl
+            send: Machine.Send.Impl
             /**
              * The event that triggered the cleanup effect.
              */
-            event: Event.Impl
+            event: Machine.Event.Impl
             /**
              * The current context of the state machine.
              */
-            context: Context.Impl
+            context: Machine.Context.Impl
             /**
              * The function to update the context of the state machine.
              */
-            setContext: SetContext.Impl
+            setContext: Machine.SetContext.Impl
           }
         }
       }
@@ -657,11 +658,11 @@ export namespace Machine {
           // } else {
           //   return never
           // }
-          Type extends Definition.ExhaustiveIdentifier ? (
+          Type extends Machine.Definition.ExhaustiveIdentifier ? (
             boolean
-          ) : Type extends Definition.InitialEventType ? (
+          ) : Type extends Machine.Definition.InitialEventType ? (
             A.CustomError<
-              `Error: '${Definition.InitialEventType}' is a reserved type`,
+              `Error: '${Machine.Definition.InitialEventType}' is a reserved type`,
               A.Get<EventsSchema, Type>>
           ) : A.DoesExtend<Type, A.Str> extends false ? (
             A.CustomError<
@@ -753,7 +754,7 @@ export namespace Machine {
     EventsSchema = A.Get<D, ["schema", "events"], {}>
   > = 
     | O.Value<{
-        [T in Exclude<keyof EventsSchema, Definition.ExhaustiveIdentifier>]:
+        [T in Exclude<keyof EventsSchema, Machine.Definition.ExhaustiveIdentifier>]:
           // if (the event schema is valid) {
           //   return the event
           // } else {
@@ -770,7 +771,7 @@ export namespace Machine {
           )
       }>
     | (
-        A.Get<EventsSchema, Definition.ExhaustiveIdentifier, false> extends true ? (
+        A.Get<EventsSchema, Machine.Definition.ExhaustiveIdentifier, false> extends true ? (
           never
         ) : (
           (
@@ -800,9 +801,9 @@ export namespace Machine {
               )
           ) extends infer InferredEvent ? (
             InferredEvent extends any ? (
-              A.Get<InferredEvent, "type"> extends keyof EventsSchema              ? never :
-              A.Get<InferredEvent, "type"> extends Definition.ExhaustiveIdentifier ? never :
-              A.Get<InferredEvent, "type"> extends Definition.InitialEventType     ? never :
+              A.Get<InferredEvent, "type"> extends keyof EventsSchema                      ? never :
+              A.Get<InferredEvent, "type"> extends Machine.Definition.ExhaustiveIdentifier ? never :
+              A.Get<InferredEvent, "type"> extends Machine.Definition.InitialEventType     ? never :
               InferredEvent
             ) : (
               never
@@ -841,14 +842,14 @@ export namespace Machine {
         // } else {
         //   return never
         // }
-        StateValue extends InitialStateValue<D> ? (
-          { type: Definition.InitialEventType }
+        StateValue extends Machine.InitialStateValue<D> ? (
+          { type: Machine.Definition.InitialEventType }
         ) : (
           never
         )
       )
     | Extract<
-        Event<D>,
+        Machine.Event<D>,
         {
           type:
             | O.Value<{
@@ -941,8 +942,8 @@ export namespace Machine {
      * Sendable event for a state value for internal usage.
      */
     export type Impl = 
-      | Event.Impl["type"]
-      | Event.Impl;
+      | Machine.Event.Impl["type"]
+      | Machine.Event.Impl;
   }
 
   /**
@@ -956,13 +957,13 @@ export namespace Machine {
      * 
      * @param sendable The event to send to the state machine.
      */
-    (sendable: Exclude<Sendable<D>, A.Str>): void
+    (sendable: Exclude<Machine.Sendable<D>, A.Str>): void
     /**
      * Sends an event to the state machine.
      * 
      * @param sendable The event to send to the state machine.
      */
-    (sendable: Extract<Sendable<D>, A.Str>): void
+    (sendable: Extract<Machine.Sendable<D>, A.Str>): void
   };
 
   /**
@@ -974,7 +975,7 @@ export namespace Machine {
      * 
      * @param sendable The event to send to the state machine.
      */
-    export type Impl = (send: Sendable.Impl) => void;
+    export type Impl = (send: Machine.Sendable.Impl) => void;
   }
 
   /**
@@ -984,11 +985,11 @@ export namespace Machine {
    * @param contextUpdater The function to update the context of the state machine.
    * @returns An object with the send function to send an event to the state machine.
    */
-  export type SetContext<D> = (contextUpdater: ContextUpdater<D>) => {
+  export type SetContext<D> = (contextUpdater: Machine.ContextUpdater<D>) => {
     /**
      * Sends an event to the state machine.
      */
-    send: Send<D>
+    send: Machine.Send<D>
   };
 
   /**
@@ -1001,11 +1002,11 @@ export namespace Machine {
      * @param contextUpdater The function to update the context of the state machine.
      * @returns An object with the send function to send an event to the state machine.
      */
-    export type Impl = (context: ContextUpdater.Impl) => {
+    export type Impl = (context: Machine.ContextUpdater.Impl) => {
       /**
        * Sends an event to the state machine.
        */
-      send: Send.Impl
+      send: Machine.Send.Impl
     };
   }
 
@@ -1016,7 +1017,7 @@ export namespace Machine {
    * @param context The current context of the state machine.
    * @returns The updated context of the state machine.
    */
-  export type ContextUpdater<D> = (context: Context<D>) => Context<D>;
+  export type ContextUpdater<D> = (context: Machine.Context<D>) => Machine.Context<D>;
 
   /**
    * Collections of types and interfaces for the context updater of the state machine.
@@ -1028,7 +1029,7 @@ export namespace Machine {
      * @param context The current context of the state machine.
      * @returns The updated context of the state machine.
      */
-    export type Impl = (context: Context.Impl) => Context.Impl
+    export type Impl = (context: Machine.Context.Impl) => Machine.Context.Impl
   }
 
   /**
@@ -1040,7 +1041,7 @@ export namespace Machine {
    */
   export type State<
     D,
-    Value = StateValue<D>,
+    Value = Machine.StateValue<D>,
     NextEvents =
       (
         // if (the state value has a next event) {
@@ -1049,7 +1050,7 @@ export namespace Machine {
         //   return never
         // }
         Value extends any ? (
-          A.Get<ExitEventForStateValue<D, Value>, "type">
+          A.Get<Machine.ExitEventForStateValue<D, Value>, "type">
         ) : (
           never
         )
@@ -1063,9 +1064,9 @@ export namespace Machine {
     Value extends any ? (
       {
         value: Value
-        context: Context<D>
-        event: EntryEventForStateValue<D, Value>
-        nextEventsT: A.Get<ExitEventForStateValue<D, Value>, "type">[]
+        context: Machine.Context<D>
+        event: Machine.EntryEventForStateValue<D, Value>
+        nextEventsT: A.Get<Machine.ExitEventForStateValue<D, Value>, "type">[]
         nextEvents: NextEvents
       }
     ) : (
@@ -1083,23 +1084,23 @@ export namespace Machine {
       /**
        * The current state value.
        */
-      value: StateValue.Impl
+      value: Machine.StateValue.Impl
       /**
        * The current context of the state machine.
        */
-      context: Context.Impl
+      context: Machine.Context.Impl
       /**
        * The event that triggered the state.
        */
-      event: Event.Impl
+      event: Machine.Event.Impl
       /**
        * The next events that can be sent to the state machine.
        */
-      nextEvents: Event.Impl["type"][]
+      nextEvents: Machine.Event.Impl["type"][]
       /**
        * The next events that can be sent to the state machine.
        */
-      nextEventsT: Event.Impl["type"][]
+      nextEventsT: Machine.Event.Impl["type"][]
     }
   }
 }
@@ -1128,14 +1129,24 @@ export namespace L {
    * 
    * @template A The tuple.
    */
-  export type Popped<A> = A extends [] ? [] : A extends [...infer X, any] ? X : never;
+  export type Popped<A>
+    = A extends []
+      ? []
+      : A extends [...infer X, any]
+        ? X
+        : never;
 
   /**
    * Infer the last element of a tuple.
    * 
    * @template A The tuple.
    */
-  export type Pop<A> = A extends [] ? undefined : A extends [...any[], infer X] ? X : never; 
+  export type Pop<A> =
+    A extends []
+      ? undefined
+      : A extends [...any[], infer X]
+        ? X
+        : never; 
 }
 
 /**
@@ -1238,7 +1249,7 @@ export namespace A {
       ? (
           T extends A.Func ? T :
           T extends { [$$t]: unknown } ? T :
-          T extends A.Obj ? InferNarrowestObject<T> :
+          T extends A.Obj ? A.InferNarrowestObject<T> :
           T
         )
       : never
@@ -1249,7 +1260,7 @@ export namespace A {
    * @template T The object type.
    */
   export type InferNarrowestObject<T> = {
-    readonly [K in keyof T]: InferNarrowest<T[K]>
+    readonly [K in keyof T]: A.InferNarrowest<T[K]>
   }
 
   /**
@@ -1302,9 +1313,9 @@ export namespace A {
     P extends [infer K1, ...infer Kr] ?
       K1 extends keyof T ?
         _Get<T[K1], Kr, F> :
-      K1 extends Get.Returned$$ ?
+      K1 extends A.Get.Returned$$ ?
         _Get<T extends (...a: any[]) => infer R ? R : undefined, Kr, F> :
-      K1 extends Get.Parameters$$ ?
+      K1 extends A.Get.Parameters$$ ?
         _Get<T extends (...a: infer A) => any ? A : undefined, Kr, F> :
       F :
     never
@@ -1470,21 +1481,21 @@ export namespace R {
   /**
    * A type that represents a key-value pair with unknown key.
    */
-  export type Unknown = Of<string, unknown>;
+  export type Unknown = R.Of<string, unknown>;
 
   /**
    * Extracts the key type from a key-value pair.
    *
    * @template O The key-value pair type.
    */
-  export type Key<O extends R.Unknown> = O[$$K];
+  export type Key<O extends R.Unknown> = O[R.$$K];
 
   /**
    * Extracts the value type from a key-value pair.
    *
    * @template O The key-value pair type.
    */
-  export type Value<O extends R.Unknown> = O[$$V];
+  export type Value<O extends R.Unknown> = O[R.$$V];
 
   /**
    * Concatenates two key-value pairs.
