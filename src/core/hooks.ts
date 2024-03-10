@@ -1,6 +1,5 @@
-import { useRef } from "react";
 import { type Dispatchers, processEffect } from "./logic";
-import { useEffect, useInsertionEffect } from "./react";
+import { useEffect, useInsertionEffect, useRef } from "./react";
 import { $$tf, type Machine, type Transfer } from "./src";
 
 /**
