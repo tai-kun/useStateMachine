@@ -47,20 +47,21 @@
     "test": "dts test",
     "check": "biome check --apply ./examples ./scripts ./src ./test",
     "format": "biome format --write ./examples ./scripts ./src ./test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "update": "ncu -u --target minor '/^(?!(@types\/)?react-?).*/' && ncu -u --target patch '/^(@types\/)?react-?/'"
   },
   "peerDependencies": {
     "react": "^18.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.5.3",
+    "@biomejs/biome": "^1.6.0",
     "@size-limit/preset-small-lib": "^11.0.2",
     "@testing-library/react": "^14.2.1",
     "@tsconfig/node18": "^18.2.2",
     "@tsconfig/strictest": "^2.0.3",
     "@types/jest": "^29.5.12",
-    "@types/react": "^18.2.61",
-    "@types/react-dom": "^18.2.19",
+    "@types/react": "^18.0.38",
+    "@types/react-dom": "^18.0.11",
     "dts-cli": "^2.0.4",
     "esbuild": "^0.20.1",
     "global-jsdom": "^24.0.0",
@@ -68,7 +69,7 @@
     "react": "^18.0.0",
     "size-limit": "^11.0.2",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.2"
   },
   "jest": {
     "resetMocks": true
