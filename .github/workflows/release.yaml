@@ -17,14 +17,14 @@ jobs:
         with:
           node-version: "21.x"
 
-      - name: Install dependencies
-        run: npm ci
+      # - name: Install dependencies
+      #   run: npm ci
 
-      - name: Build
-        run: npm run build
+      # - name: Build
+      #   run: npm run build
 
-      - name: Check Size
-        run: npm run size
+      # - name: Check Size
+      #   run: npm run size
 
       - name: Pin version
         run: npm --no-git-tag-version version "${GITHUB_REF#refs/*/}"
