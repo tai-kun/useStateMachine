@@ -2,6 +2,14 @@
 <img src="https://user-images.githubusercontent.com/33676/111815108-4695b900-88a9-11eb-8b61-3c45b40d4df6.png" width="250" alt=""/>
 </p>
 
+> [!WARNING]  
+> Deprecated repository
+>
+> This repository is deprecated and will no longer receive updates or support.
+> As of March > 26, 2024, I recommend using the following repository instead:
+>
+> [tai-kun/use-machine-ts](https://github.com/tai-kun/use-machine-ts)
+
 **The <1 KiB _state machine_ hook for React:**
 
 [![Test](https://github.com/tai-kun/useStateMachine/actions/workflows/test.yaml/badge.svg)](https://github.com/tai-kun/useStateMachine/actions/workflows/test.yaml)
